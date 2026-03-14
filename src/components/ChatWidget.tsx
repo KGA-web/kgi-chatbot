@@ -107,7 +107,7 @@ export default function KGIChatWidget() {
     <>
       <button
         onClick={() => setIsOpen(true)}
-        className="fixed bottom-6 right-6 bg-[#1a365d] text-white p-4 rounded-full shadow-lg hover:bg-[#2d4a7c] transition-all z-50 flex items-center gap-2"
+        className="fixed bottom-6 right-6 bg-[#a91f23] text-white p-4 rounded-full shadow-lg hover:bg-[#ffa84a] transition-all z-50 flex items-center gap-2"
       >
         <MessageCircle size={24} />
         <span className="font-medium">Chat with AI</span>
@@ -121,7 +121,7 @@ export default function KGIChatWidget() {
             exit={{ opacity: 0, y: 20, scale: 0.95 }}
             className="fixed bottom-6 right-6 w-[380px] h-[500px] bg-white rounded-2xl shadow-2xl z-50 flex flex-col overflow-hidden border border-gray-200"
           >
-            <div className="bg-[#1a365d] text-white p-4 flex items-center justify-between">
+            <div className="bg-[#a91f23] text-white p-4 flex items-center justify-between">
               <div className="flex items-center gap-3">
                 <div className="w-10 h-10 bg-white/20 rounded-full flex items-center justify-center">
                   <GraduationCap size={20} />
@@ -146,7 +146,7 @@ export default function KGIChatWidget() {
                 <div key={msg.id} className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}>
                   <div className={`max-w-[80%] p-3 rounded-2xl text-sm ${
                     msg.role === 'user' 
-                      ? 'bg-[#1a365d] text-white rounded-br-md' 
+                      ? 'bg-[#a91f23] text-white rounded-br-md' 
                       : 'bg-white border border-gray-200 text-gray-800 rounded-bl-md'
                   }`}>
                     {msg.content.split('\n').map((line, i) => (
@@ -178,19 +178,19 @@ export default function KGIChatWidget() {
                   <input 
                     type="text" 
                     placeholder="Your Name *"
-                    className="w-full p-2 text-sm border rounded-lg focus:ring-2 focus:ring-[#1a365d] outline-none"
+                    className="w-full p-2 text-sm border rounded-lg focus:ring-2 focus:ring-[#a91f23] outline-none"
                     value={userData.name}
                     onChange={e => setUserData({...userData, name: e.target.value})}
                   />
                   <input 
                     type="tel" 
                     placeholder="Mobile Number *"
-                    className="w-full p-2 text-sm border rounded-lg focus:ring-2 focus:ring-[#1a365d] outline-none"
+                    className="w-full p-2 text-sm border rounded-lg focus:ring-2 focus:ring-[#a91f23] outline-none"
                     value={userData.phone}
                     onChange={e => setUserData({...userData, phone: e.target.value})}
                   />
                   <select 
-                    className="w-full p-2 text-sm border rounded-lg focus:ring-2 focus:ring-[#1a365d] outline-none"
+                    className="w-full p-2 text-sm border rounded-lg focus:ring-2 focus:ring-[#a91f23] outline-none"
                     value={userData.userType}
                     onChange={e => setUserData({...userData, userType: e.target.value as any})}
                   >
@@ -200,7 +200,7 @@ export default function KGIChatWidget() {
                     <option value="public">General Public</option>
                   </select>
                   <select 
-                    className="w-full p-2 text-sm border rounded-lg focus:ring-2 focus:ring-[#1a365d] outline-none"
+                    className="w-full p-2 text-sm border rounded-lg focus:ring-2 focus:ring-[#a91f23] outline-none"
                     value={userData.course}
                     onChange={e => setUserData({...userData, course: e.target.value})}
                   >
@@ -218,7 +218,7 @@ export default function KGIChatWidget() {
                   </select>
                   <button 
                     onClick={submitUserData}
-                    className="w-full bg-[#1a365d] text-white py-2 rounded-lg text-sm font-medium hover:bg-[#2d4a7c]"
+                    className="w-full bg-[#a91f23] text-white py-2 rounded-lg text-sm font-medium hover:bg-[#ffa84a]"
                   >
                     Submit Details
                   </button>
@@ -239,21 +239,21 @@ export default function KGIChatWidget() {
                     onChange={(e) => setInput(e.target.value)}
                     onKeyDown={(e) => e.key === 'Enter' && sendMessage(input)}
                     placeholder="Type your message..."
-                    className="flex-1 p-2 text-sm border rounded-lg focus:ring-2 focus:ring-[#1a365d] outline-none"
+                    className="flex-1 p-2 text-sm border rounded-lg focus:ring-2 focus:ring-[#a91f23] outline-none"
                   />
                   <button 
                     onClick={() => sendMessage(input)}
                     disabled={loading}
-                    className="bg-[#1a365d] text-white p-2 rounded-lg hover:bg-[#2d4a7c] disabled:opacity-50"
+                    className="bg-[#a91f23] text-white p-2 rounded-lg hover:bg-[#ffa84a] disabled:opacity-50"
                   >
                     <Send size={20} />
                   </button>
                 </div>
                 <div className="flex justify-center gap-4 mt-3">
-                  <a href="tel:8088660000" className="flex items-center gap-1 text-xs text-[#1a365d]">
+                  <a href="tel:8088660000" className="flex items-center gap-1 text-xs text-[#a91f23]">
                     <Phone size={14} /> Call Now
                   </a>
-                  <a href="https://apply.kgi.edu.in" target="_blank" className="text-xs text-[#1a365d] font-medium">
+                  <a href="https://apply.kgi.edu.in" target="_blank" className="text-xs text-[#a91f23] font-medium">
                     Apply Now →
                   </a>
                 </div>
