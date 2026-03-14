@@ -4,8 +4,10 @@ import { generateContextPrompt } from '@/data/knowledgeBase';
 
 function getGroqClient() {
   const apiKey = process.env.GROQ_API_KEY;
+  console.log('GROQ_API_KEY present:', !!apiKey);
+  console.log('GROQ_MODEL:', process.env.GROQ_MODEL);
   if (!apiKey) {
-    throw new Error('GROQ_API_KEY is not set');
+    return null;
   }
   return new (Groq as any)({ apiKey });
 }
@@ -13,6 +15,9 @@ function getGroqClient() {
 export async function POST(request: NextRequest) {
   try {
     const groq = getGroqClient();
+    if (!groq) {
+      return NextResponse.json({ error: 'GROQ_API_KEY is not configured' }, { status: 500 });
+    }
     
     const body = await request.json();
     const { message, history = [] } = body;
