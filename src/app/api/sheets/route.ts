@@ -20,9 +20,9 @@ export async function POST(request: NextRequest) {
     const body = await request.json();
     const { name, phone, userType, course, inquiry } = body;
 
-    if (!name || !phone || !userType) {
+    if (!name || !phone) {
       return NextResponse.json(
-        { error: 'Name, phone, and user type are required' },
+        { error: 'Name and phone are required' },
         { status: 400 }
       );
     }
