@@ -91,14 +91,17 @@ export default function KGIChatWidget() {
     
     if (collectionStep === 'name') {
       handleNameSubmit(text);
+      setInput('');
       return;
     }
     if (collectionStep === 'phone') {
       handlePhoneSubmit(text);
+      setInput('');
       return;
     }
     if (collectionStep === 'course') {
       handleCourseSubmit(text);
+      setInput('');
       return;
     }
     
