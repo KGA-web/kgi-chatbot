@@ -2,12 +2,18 @@ import { NextRequest, NextResponse } from 'next/server';
 import Groq from 'groq';
 import { generateContextPrompt } from '@/data/knowledgeBase';
 
-const groq = new (Groq as any)({
-  apiKey: process.env.GROQ_API_KEY || '',
-});
+function getGroqClient() {
+  const apiKey = process.env.GROQ_API_KEY;
+  if (!apiKey) {
+    throw new Error('GROQ_API_KEY is not set');
+  }
+  return new (Groq as any)({ apiKey });
+}
 
 export async function POST(request: NextRequest) {
   try {
+    const groq = getGroqClient();
+    
     const body = await request.json();
     const { message, history = [] } = body;
 
