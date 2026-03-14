@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import Groq from 'groq';
 import { generateContextPrompt } from '@/data/knowledgeBase';
 
-const groq = new Groq({
+const groq = new (Groq as any)({
   apiKey: process.env.GROQ_API_KEY || '',
 });
 
