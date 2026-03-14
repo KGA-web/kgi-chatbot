@@ -26,7 +26,7 @@ export default function KGIChatWidget() {
   const [userData, setUserData] = useState<UserData>({ name: '', phone: '', userType: '', course: '' });
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
-  const welcomeMessage = "Namaste! Welcome to Koshys Group of Institutions! 🎓\n\nI'm here to help you with:\n• Admissions & Enquiries\n• Course Details\n• Campus Information\n• Fee Details\n\nHow can I assist you today?";
+  const welcomeMessage = "Namaste! I'm KAIA - Koshys AI Assistant! 🎓\n\nI'm here to help you with:\n• Admissions & Enquiries\n• Course Details\n• Campus Information\n• Fee Details\n\nHow can I assist you today?";
 
   useEffect(() => {
     if (isOpen && messages.length === 0) {
@@ -127,7 +127,7 @@ export default function KGIChatWidget() {
                   <GraduationCap size={20} />
                 </div>
                 <div>
-                  <h3 className="font-semibold">KGI Assistant</h3>
+                  <h3 className="font-semibold">KAIA</h3>
                   <p className="text-xs text-white/70">Online | Powered by AI</p>
                 </div>
               </div>
