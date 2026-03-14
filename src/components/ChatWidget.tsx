@@ -27,7 +27,7 @@ export default function KGIChatWidget() {
   const [userData, setUserData] = useState({ name: '', phone: '', course: '' });
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
-  const welcomeMessage = "Namaste! 🙏 I'm KAIA - your admission assistant at Koshys Group of Institutions.\n\nTo give you the best guidance, may I know your name?";
+  const welcomeMessage = "Namaste! 🙏 I'm Kaia - your admission assistant at Koshys Group of Institutions.\n\nTo give you the best guidance, may I know your name?";
 
   useEffect(() => {
     if (isOpen && messages.length === 0) {
@@ -148,7 +148,7 @@ export default function KGIChatWidget() {
         className="fixed bottom-6 right-6 bg-[#a91f23] text-white p-4 rounded-full shadow-lg hover:bg-[#ffa84a] transition-all z-50 flex items-center gap-2"
       >
         <MessageCircle size={24} />
-        <span className="font-medium">Chat with KAIA</span>
+        <span className="font-medium">Chat with Kaia</span>
       </button>
 
       <AnimatePresence>
@@ -165,7 +165,7 @@ export default function KGIChatWidget() {
                   <GraduationCap size={20} />
                 </div>
                 <div>
-                  <h3 className="font-semibold">KAIA</h3>
+                  <h3 className="font-semibold">Kaia</h3>
                   <p className="text-xs text-white/70">
                     {collectionStep === 'done' ? 'Ready to help!' : 'Gathering details...'}
                   </p>

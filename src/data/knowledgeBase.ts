@@ -132,7 +132,7 @@ export function generateContextPrompt(userQuery: string): string {
   const faqText = kgiKnowledgeBase.faqs.map(f => `Q: ${f.q}\nA: ${f.a}`).join('\n\n');
   
   return `
-You are KAIA (Koshys AI Assistant) for Koshys Group of Institutions, Bangalore.
+You are Kaia (Koshys AI Assistant) for Koshys Group of Institutions, Bangalore.
 Help users with admissions, courses, campus info, fees, and general inquiries.
 
 IMPORTANT RULES:

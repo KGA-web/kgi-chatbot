@@ -1,30 +1,61 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { generateContextPrompt } from '@/data/knowledgeBase';
 
+const MAX_MESSAGE_LENGTH = 1000;
+const MAX_HISTORY_LENGTH = 20;
+
+function sanitizeInput(input: string): string {
+  return input
+    .replace(/[<>]/g, '')
+    .replace(/javascript:/gi, '')
+    .replace(/on\w+=/gi, '')
+    .trim()
+    .slice(0, MAX_MESSAGE_LENGTH);
+}
+
+function isValidRole(role: string): boolean {
+  return role === 'user' || role === 'assistant';
+}
+
 export async function POST(request: NextRequest) {
   try {
     const apiKey = process.env.GROQ_API_KEY;
     const model = process.env.GROQ_MODEL || 'llama-3.3-70b-versatile';
     
     if (!apiKey) {
-      return NextResponse.json({ error: 'GROQ_API_KEY is not configured' }, { status: 500 });
+      return NextResponse.json({ error: 'Service unavailable' }, { status: 503 });
     }
     
     const body = await request.json();
-    const { message, history = [] } = body;
+    let { message, history = [] } = body;
 
-    if (!message) {
-      return NextResponse.json({ error: 'Message is required' }, { status: 400 });
+    if (!message || typeof message !== 'string') {
+      return NextResponse.json({ error: 'Invalid request' }, { status: 400 });
     }
+
+    message = sanitizeInput(message);
+    
+    if (!message) {
+      return NextResponse.json({ error: 'Message cannot be empty' }, { status: 400 });
+    }
+
+    if (!Array.isArray(history)) {
+      history = [];
+    }
+
+    history = history
+      .filter((m: any) => m && m.role && m.content && typeof m.content === 'string')
+      .slice(-MAX_HISTORY_LENGTH)
+      .map((m: any) => ({
+        role: isValidRole(m.role) ? m.role : 'user',
+        content: sanitizeInput(m.content)
+      }));
 
     const contextPrompt = generateContextPrompt(message);
 
     const messages = [
       { role: 'system', content: contextPrompt },
-      ...history.map((msg: { role: string; content: string }) => ({
-        role: msg.role as 'user' | 'assistant',
-        content: msg.content,
-      })),
+      ...history,
       { role: 'user', content: message },
     ];
 
@@ -43,12 +74,13 @@ export async function POST(request: NextRequest) {
     });
 
     if (!response.ok) {
-      const errorData = await response.json();
-      throw new Error(errorData.error?.message || 'Groq API error');
+      throw new Error('AI service error');
     }
 
     const data = await response.json();
-    const reply = data.choices[0]?.message?.content || 'Sorry, I could not process your request.';
+    let reply = data.choices[0]?.message?.content || 'Sorry, I could not process your request.';
+
+    reply = sanitizeInput(reply);
 
     return NextResponse.json({ 
       reply,
@@ -61,8 +93,7 @@ export async function POST(request: NextRequest) {
     return NextResponse.json(
       { 
         reply: 'I apologize, but I\'m experiencing technical difficulties. Please call 808 866 0000 for immediate assistance or try again later.',
-        success: false,
-        error: error.message 
+        success: false
       },
       { status: 500 }
     );
