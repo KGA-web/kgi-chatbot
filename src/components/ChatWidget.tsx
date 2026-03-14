@@ -105,7 +105,6 @@ export default function KGIChatWidget() {
     const userMsg: Message = { id: Date.now().toString(), role: 'user', content: text };
     setMessages(prev => [...prev, userMsg]);
     setInput('');
-    setLoading(true);
 
     try {
       const res = await fetch('/api/chat', {
