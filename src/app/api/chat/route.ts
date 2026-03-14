@@ -1,21 +1,12 @@
 import { NextRequest, NextResponse } from 'next/server';
-import Groq from 'groq';
 import { generateContextPrompt } from '@/data/knowledgeBase';
-
-function getGroqClient() {
-  const apiKey = process.env.GROQ_API_KEY;
-  console.log('GROQ_API_KEY present:', !!apiKey);
-  console.log('GROQ_MODEL:', process.env.GROQ_MODEL);
-  if (!apiKey) {
-    return null;
-  }
-  return new (Groq as any)({ apiKey });
-}
 
 export async function POST(request: NextRequest) {
   try {
-    const groq = getGroqClient();
-    if (!groq) {
+    const apiKey = process.env.GROQ_API_KEY;
+    const model = process.env.GROQ_MODEL || 'llama-3.3-70b-versatile';
+    
+    if (!apiKey) {
       return NextResponse.json({ error: 'GROQ_API_KEY is not configured' }, { status: 500 });
     }
     
@@ -37,14 +28,27 @@ export async function POST(request: NextRequest) {
       { role: 'user', content: message },
     ];
 
-    const completion = await groq.chat.completions.create({
-      model: process.env.GROQ_MODEL || 'llama-3.3-70b-versatile',
-      messages: messages as any[],
-      temperature: 0.7,
-      max_tokens: 500,
+    const response = await fetch('https://api.groq.com/openai/v1/chat/completions', {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${apiKey}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        model: model,
+        messages: messages,
+        temperature: 0.7,
+        max_tokens: 500,
+      }),
     });
 
-    const reply = completion.choices[0]?.message?.content || 'Sorry, I could not process your request.';
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(errorData.error?.message || 'Groq API error');
+    }
+
+    const data = await response.json();
+    const reply = data.choices[0]?.message?.content || 'Sorry, I could not process your request.';
 
     return NextResponse.json({ 
       reply,
