@@ -150,35 +150,15 @@ export default function KGIChatWidget({ embedded = false }: { embedded?: boolean
   };
 
   return (
-    <>
-      {!embedded && (
-        <button
-          onClick={() => setIsOpen(true)}
-          style={{
-            position: 'fixed',
-            bottom: '20px',
-            right: '20px',
-            width: '60px',
-            height: '60px',
-            background: 'linear-gradient(135deg, #a91f23 0%, #7d1418 100%)',
-            borderRadius: '50%',
-            border: 'none',
-            cursor: 'pointer',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            boxShadow: '0 4px 20px rgba(169, 31, 35, 0.4)',
-            zIndex: 99999,
-          }}
-        >
-          <svg width="28" height="28" fill="white" viewBox="0 0 24 24">
-            <path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/>
-          </svg>
-        </button>
-      )}
-
-      {isOpen && (
-        <div style={{
+    <div style={{
+      position: 'relative',
+      width: '100%',
+      height: '100%',
+      display: 'flex',
+      flexDirection: 'column',
+    }}>
+      {/* Chat Window */}
+      <div style={{
           position: 'fixed',
           bottom: embedded ? '0' : '90px',
           right: embedded ? '0' : '20px',
@@ -394,7 +374,6 @@ export default function KGIChatWidget({ embedded = false }: { embedded?: boolean
             </div>
           )}
         </div>
-      )}
 
       <style>{`
         @keyframes bounce {
@@ -402,6 +381,6 @@ export default function KGIChatWidget({ embedded = false }: { embedded?: boolean
           30% { transform: translateY(-4px); }
         }
       `}</style>
-    </>
+    </div>
   );
 }
