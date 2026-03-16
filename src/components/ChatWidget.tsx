@@ -271,7 +271,7 @@ export default function KGIChatWidget({ embedded = false }: { embedded?: boolean
                   lineHeight: 1.5,
                   background: msg.role === 'user' ? '#a91f23' : 'white',
                   color: msg.role === 'user' ? 'white' : '#212529',
-                  border: msg.role === 'bot' ? '1px solid #e9ecef' : 'none',
+                  border: msg.role === 'assistant' ? '1px solid #e9ecef' : 'none',
                   borderBottomLeftRadius: msg.role === 'assistant' ? '3px' : '12px',
                   borderBottomRightRadius: msg.role === 'user' ? '3px' : '12px',
                 }}
