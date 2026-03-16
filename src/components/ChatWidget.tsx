@@ -18,8 +18,8 @@ const courses = [
   "Hotel Management", "B.Sc Radiology", "Other"
 ];
 
-export default function KGIChatWidget() {
-  const [isOpen, setIsOpen] = useState(false);
+export default function KGIChatWidget({ embedded = false }: { embedded?: boolean }) {
+  const [isOpen, setIsOpen] = useState(embedded);
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState('');
   const [loading, setLoading] = useState(false);
@@ -227,13 +227,15 @@ export default function KGIChatWidget() {
 
   return (
     <>
-      <button
-        onClick={() => setIsOpen(true)}
-        className="fixed bottom-6 right-6 bg-[#a91f23] text-white p-4 rounded-full shadow-lg hover:bg-[#ffa84a] transition-all z-50 flex items-center gap-2"
-      >
-        <MessageCircle size={24} />
-        <span className="font-medium">Chat with Kaia</span>
-      </button>
+      {!embedded && (
+        <button
+          onClick={() => setIsOpen(true)}
+          className="fixed bottom-6 right-6 bg-[#a91f23] text-white p-4 rounded-full shadow-lg hover:bg-[#ffa84a] transition-all z-50 flex items-center gap-2"
+        >
+          <MessageCircle size={24} />
+          <span className="font-medium">Chat with Kaia</span>
+        </button>
+      )}
 
       <AnimatePresence>
         {isOpen && (
