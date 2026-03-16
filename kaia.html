@@ -204,26 +204,28 @@
     }
     
     async function getAI(q){
-      if(!API_CONFIGURED){
-        addMsg("I'm currently in demo mode. For full AI features, please configure the API key.\n\nMeanwhile, call 808 866 0000 for admission assistance!", 'bot');
-        return;
+      // Fallback responses when API not configured
+      const lowerQ = q.toLowerCase();
+      let response = '';
+      
+      if(lowerQ.includes('fee') || lowerQ.includes('cost') || lowerQ.includes('price')){
+        response = 'For detailed fee information, please contact our admission team at 808 866 0000 or visit https://apply.kgi.edu.in';
+      }else if(lowerQ.includes('course') || lowerQ.includes('available')){
+        response = 'We offer: BBA, BCA, B.Com, MBA, MCA, B.Sc Nursing, GNM, Hotel Management, and more. Which course interests you?';
+      }else if(lowerQ.includes('location') || lowerQ.includes('address') || lowerQ.includes('where')){
+        response = 'KGI is located at #31/1, Hennur-Bagalur Road, Kannur P.O., Mitganahalli, Bengaluru, Karnataka 562149.';
+      }else if(lowerQ.includes('contact') || lowerQ.includes('phone') || lowerQ.includes('call')){
+        response = 'Call us at 808 866 0000 or email info@kgi.edu.in';
+      }else if(lowerQ.includes('admission') || lowerQ.includes('apply') || lowerQ.includes('register')){
+        response = 'Admissions are open! Apply now at https://apply.kgi.edu.in or call 808 866 0000';
+      }else if(lowerQ.includes('hello') || lowerQ.includes('hi') || lowerQ.includes('hey') || lowerQ.includes('namaste')){
+        response = 'Namaste! How can I help you today? You can ask about courses, admissions, fees, or campus details.';
+      }else{
+        response = 'Thank you for your interest! For more details, please call 808 866 0000 or visit https://apply.kgi.edu.in';
       }
-      showTyping();
-      try{
-        const r = await fetch('https://api.groq.com/openai/v1/chat/completions', {
-          method:'POST',
-          headers:{'Authorization':`Bearer ${GROQ_API_KEY}`,'Content-Type':'application/json'},
-          body:JSON.stringify({
-            model:'llama-3.3-70b-versatile',
-            messages:[{role:'system',content:'You are Kaia, admission assistant for Koshys Group of Institutions, Bangalore. Be friendly. For fees say "Call 808 866 0000".'},...msgs.slice(-10),{role:'user',content:q}],
-            temperature:0.7, max_tokens:300
-          })
-        });
-        const d = await r.json();
-        hideTyping();
-        addMsg(d.choices[0]?.message?.content || 'Sorry, try again.', 'bot');
-        speak(d.choices[0]?.message?.content || 'Sorry');
-      }catch(e){ hideTyping(); addMsg('Error. Call 808 866 0000.', 'bot'); }
+      
+      addMsg(response, 'bot');
+      speak(response);
     }
     
     function showTyping(){
