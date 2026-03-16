@@ -1,5 +1,4 @@
 import ChatWidget from '@/components/ChatWidget';
-import './globals.css';
 
 export const metadata = {
   title: 'Kaia Chat Widget',
