@@ -111,6 +111,8 @@
     const SHEET_URL = 'YOUR_GOOGLE_APPS_SCRIPT_URL';
     // ================================================
     
+    const API_CONFIGURED = GROQ_API_KEY !== 'YOUR_GROQ_API_KEY' && GROQ_API_KEY.length > 10;
+    
     let step = 'name', user = {name:'',phone:'',course:''}, msgs = [], lang = 'en-IN';
     const courses = ['BBA','BCA','B.Com','MBA','MCA','B.Sc Nursing','GNM Nursing','M.Sc Nursing','Hotel Management','B.Sc Radiology','Other'];
     
@@ -202,6 +204,10 @@
     }
     
     async function getAI(q){
+      if(!API_CONFIGURED){
+        addMsg("I'm currently in demo mode. For full AI features, please configure the API key.\n\nMeanwhile, call 808 866 0000 for admission assistance!", 'bot');
+        return;
+      }
       showTyping();
       try{
         const r = await fetch('https://api.groq.com/openai/v1/chat/completions', {
