@@ -22,6 +22,7 @@ export default function KGIChatWidget({ embedded = false }: { embedded?: boolean
   const [loading, setLoading] = useState(false);
   const [collectionStep, setCollectionStep] = useState<CollectionStep>('name');
   const [userData, setUserData] = useState({ name: '', phone: '', course: '' });
+  const [speechLang, setSpeechLang] = useState('en-IN');
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   const welcomeMessage = "Namaste! 🙏 I'm Kaia - your admission assistant at Koshys Group of Institutions.\n\nMay I know your name?";
@@ -149,6 +150,14 @@ export default function KGIChatWidget({ embedded = false }: { embedded?: boolean
     return '';
   };
 
+  const handleClose = () => {
+    if (embedded) {
+      window.parent.postMessage({ type: 'CLOSE_KAIA' }, '*');
+    } else {
+      setIsOpen(false);
+    }
+  };
+
   return (
     <div style={{
       position: 'relative',
@@ -200,8 +209,31 @@ export default function KGIChatWidget({ embedded = false }: { embedded?: boolean
               <div style={{ color: 'white', fontSize: '15px', fontWeight: 600 }}>Kaia</div>
               <div style={{ color: 'rgba(255,255,255,0.8)', fontSize: '11px' }}>Koshys Group of Institutions</div>
             </div>
+            
+            {/* Language Selector */}
+            <select
+              value={speechLang}
+              onChange={(e) => setSpeechLang(e.target.value)}
+              style={{
+                background: 'rgba(255,255,255,0.2)',
+                border: 'none',
+                color: 'white',
+                padding: '4px 8px',
+                borderRadius: '4px',
+                fontSize: '11px',
+                cursor: 'pointer',
+                outline: 'none',
+              }}
+            >
+              <option value="en" style={{ color: 'black' }}>English</option>
+              <option value="hi" style={{ color: 'black' }}>हिंदी</option>
+              <option value="kn" style={{ color: 'black' }}>ಕನ್ನಡ</option>
+              <option value="ta" style={{ color: 'black' }}>தமிழ்</option>
+              <option value="te" style={{ color: 'black' }}>తెలుగు</option>
+            </select>
+            
             <button
-              onClick={() => setIsOpen(false)}
+              onClick={handleClose}
               style={{
                 background: 'none',
                 border: 'none',
@@ -315,7 +347,43 @@ export default function KGIChatWidget({ embedded = false }: { embedded?: boolean
             borderTop: '1px solid #e9ecef',
             display: 'flex',
             gap: '8px',
+            alignItems: 'center',
           }}>
+            {/* Mic Button */}
+            <button
+              onClick={() => {
+                if (!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) {
+                  alert('Voice input not supported. Use Chrome.');
+                  return;
+                }
+                const SpeechRecognition = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
+                const recognition = new SpeechRecognition();
+                recognition.lang = speechLang;
+                recognition.onresult = (event: any) => {
+                  setInput(event.results[0][0].transcript);
+                };
+                recognition.start();
+              }}
+              style={{
+                width: '36px',
+                height: '36px',
+                background: '#f8f9fa',
+                border: '1px solid #dee2e6',
+                borderRadius: '50%',
+                cursor: 'pointer',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+              }}
+              title="Voice input"
+            >
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#495057" strokeWidth="2">
+                <path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z"/>
+                <path d="M19 10v2a7 7 0 0 1-14 0v-2"/>
+                <line x1="12" x2="12" y1="19" y2="22"/>
+              </svg>
+            </button>
+            
             <input
               type={collectionStep === 'phone' ? 'tel' : 'text'}
               value={input}
@@ -351,6 +419,35 @@ export default function KGIChatWidget({ embedded = false }: { embedded?: boolean
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                 <line x1="22" x2="11" y1="2" y2="13"/>
                 <polygon points="22 2 15 22 11 13 2 9 22 2"/>
+              </svg>
+            </button>
+            
+            {/* Speaker Button */}
+            <button
+              onClick={() => {
+                const lastBotMsg = messages.filter(m => m.role === 'assistant').pop();
+                if (lastBotMsg) {
+                  const utterance = new SpeechSynthesisUtterance(lastBotMsg.content);
+                  utterance.lang = speechLang;
+                  window.speechSynthesis.speak(utterance);
+                }
+              }}
+              style={{
+                width: '36px',
+                height: '36px',
+                background: '#f8f9fa',
+                border: '1px solid #dee2e6',
+                borderRadius: '50%',
+                cursor: 'pointer',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+              }}
+              title="Listen"
+            >
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#495057" strokeWidth="2">
+                <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/>
+                <path d="M15.54 8.46a5 5 0 0 1 0 7.07"/>
               </svg>
             </button>
           </div>
