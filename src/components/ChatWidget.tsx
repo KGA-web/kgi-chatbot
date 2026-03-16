@@ -1,8 +1,6 @@
 "use client";
 
 import { useState, useRef, useEffect } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import { MessageCircle, X, Send, Phone, Minimize2, GraduationCap, CheckCircle, Mic, MicOff, Volume2, VolumeX } from 'lucide-react';
 
 interface Message {
   id: string;
@@ -14,8 +12,7 @@ type CollectionStep = 'name' | 'phone' | 'course' | 'done';
 
 const courses = [
   "BBA", "BCA", "B.Com", "MBA", "MCA", 
-  "B.Sc Nursing", "GNM Nursing", "M.Sc Nursing", 
-  "Hotel Management", "B.Sc Radiology", "Other"
+  "B.Sc Nursing", "GNM Nursing", "Hotel Management"
 ];
 
 export default function KGIChatWidget({ embedded = false }: { embedded?: boolean }) {
@@ -25,82 +22,19 @@ export default function KGIChatWidget({ embedded = false }: { embedded?: boolean
   const [loading, setLoading] = useState(false);
   const [collectionStep, setCollectionStep] = useState<CollectionStep>('name');
   const [userData, setUserData] = useState({ name: '', phone: '', course: '' });
-  const [isListening, setIsListening] = useState(false);
-  const [isSpeaking, setIsSpeaking] = useState(false);
-  const [speechLang, setSpeechLang] = useState('en-IN');
   const messagesEndRef = useRef<HTMLDivElement>(null);
-  const recognitionRef = useRef<any>(null);
 
-  const welcomeMessage = "Namaste! 🙏 I'm Kaia - your admission assistant at Koshys Group of Institutions.\n\nTo give you the best guidance, may I know your name?";
+  const welcomeMessage = "Namaste! 🙏 I'm Kaia - your admission assistant at Koshys Group of Institutions.\n\nMay I know your name?";
 
   useEffect(() => {
     if (isOpen && messages.length === 0) {
       setMessages([{ id: '1', role: 'assistant', content: welcomeMessage }]);
-      setTimeout(() => speak(welcomeMessage), 500);
     }
   }, [isOpen]);
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages]);
-
-  const speak = (text: string) => {
-    if (!('speechSynthesis' in window)) return;
-    
-    window.speechSynthesis.cancel();
-    const utterance = new SpeechSynthesisUtterance(text);
-    utterance.lang = speechLang;
-    utterance.rate = 0.9;
-    utterance.pitch = 1;
-    
-    const voices = window.speechSynthesis.getVoices();
-    const preferredVoice = voices.find(v => v.lang.includes('en-IN') || v.lang.includes('en-GB'));
-    if (preferredVoice) utterance.voice = preferredVoice;
-    
-    utterance.onstart = () => setIsSpeaking(true);
-    utterance.onend = () => setIsSpeaking(false);
-    utterance.onerror = () => setIsSpeaking(false);
-    
-    window.speechSynthesis.speak(utterance);
-  };
-
-  const stopSpeaking = () => {
-    window.speechSynthesis.cancel();
-    setIsSpeaking(false);
-  };
-
-  const startListening = () => {
-    if (!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) {
-      alert('Voice input not supported in this browser. Please use Chrome.');
-      return;
-    }
-
-    const SpeechRecognition = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
-    const recognition = new SpeechRecognition();
-    
-    recognition.lang = speechLang;
-    recognition.continuous = false;
-    recognition.interimResults = false;
-
-    recognition.onstart = () => setIsListening(true);
-    recognition.onend = () => setIsListening(false);
-    recognition.onerror = () => setIsListening(false);
-
-    recognition.onresult = (event: any) => {
-      const transcript = event.results[0][0].transcript;
-      setInput(transcript);
-    };
-
-    recognitionRef.current = recognition;
-    recognition.start();
-  };
-
-  const stopListening = () => {
-    if (recognitionRef.current) {
-      recognitionRef.current.stop();
-    }
-    setIsListening(false);
-  };
 
   const saveToSheets = async (data: any) => {
     try {
@@ -110,7 +44,7 @@ export default function KGIChatWidget({ embedded = false }: { embedded?: boolean
         body: JSON.stringify({ ...data, userType: 'student' })
       });
     } catch (e) {
-      console.error('Failed to save to sheets:', e);
+      console.error('Failed to save:', e);
     }
   };
 
@@ -119,12 +53,10 @@ export default function KGIChatWidget({ embedded = false }: { embedded?: boolean
     setUserData(updatedData);
     setCollectionStep('phone');
     
-    const response = `Nice to meet you, ${name}! 📱\n\nCould you share your mobile number?`;
     setMessages(prev => [...prev, 
       { id: Date.now().toString(), role: 'user', content: name },
-      { id: (Date.now()+1).toString(), role: 'assistant', content: response }
+      { id: (Date.now()+1).toString(), role: 'assistant', content: `Nice to meet you, ${name}! 📱\n\nCould you share your mobile number?` }
     ]);
-    speak(response);
   };
 
   const handlePhoneSubmit = async (phone: string) => {
@@ -133,12 +65,10 @@ export default function KGIChatWidget({ embedded = false }: { embedded?: boolean
     await saveToSheets(updatedData);
     setCollectionStep('course');
     
-    const response = `Got it! 📚\n\nWhich course are you interested in?`;
     setMessages(prev => [...prev, 
       { id: Date.now().toString(), role: 'user', content: phone },
-      { id: (Date.now()+1).toString(), role: 'assistant', content: response }
+      { id: (Date.now()+1).toString(), role: 'assistant', content: `Got it! 📚\n\nWhich course are you interested in?` }
     ]);
-    speak(response);
   };
 
   const handleCourseSubmit = async (course: string) => {
@@ -147,12 +77,10 @@ export default function KGIChatWidget({ embedded = false }: { embedded?: boolean
     await saveToSheets(updatedData);
     setCollectionStep('done');
     
-    const response = `Perfect! ${course} is a great choice! 🎓\n\nOur admission team will call you at ${userData.phone} shortly.\n\nIs there anything else you'd like to know about KGI?`;
     setMessages(prev => [...prev, 
       { id: Date.now().toString(), role: 'user', content: course },
-      { id: (Date.now()+1).toString(), role: 'assistant', content: response }
+      { id: (Date.now()+1).toString(), role: 'assistant', content: `Perfect! ${course} is a great choice! 🎓\n\nOur admission team will call you at ${userData.phone} shortly.\n\nIs there anything else you'd like to know about KGI?` }
     ]);
-    speak(response);
   };
 
   const sendMessage = async (text: string) => {
@@ -196,15 +124,12 @@ export default function KGIChatWidget({ embedded = false }: { embedded?: boolean
         content: data.reply 
       };
       setMessages(prev => [...prev, botMsg]);
-      speak(data.reply);
     } catch (error) {
-      const errorMsg = 'Sorry, I encountered an error. Please call 808 866 0000 for assistance.';
       setMessages(prev => [...prev, { 
         id: Date.now().toString(), 
         role: 'assistant', 
-        content: errorMsg 
+        content: 'Sorry, please call 808 866 0000 for assistance.' 
       }]);
-      speak(errorMsg);
     } finally {
       setLoading(false);
     }
@@ -217,170 +142,266 @@ export default function KGIChatWidget({ embedded = false }: { embedded?: boolean
     return 'Ask me anything...';
   };
 
-  const languages = [
-    { code: 'en-IN', name: 'English' },
-    { code: 'hi-IN', name: 'हिंदी' },
-    { code: 'kn-IN', name: 'ಕನ್ನಡ' },
-    { code: 'ta-IN', name: 'தமிழ்' },
-    { code: 'te-IN', name: 'తెలుగు' },
-  ];
+  const getProgressText = () => {
+    if (collectionStep === 'name') return 'Step 1 of 3';
+    if (collectionStep === 'phone') return 'Step 2 of 3';
+    if (collectionStep === 'course') return 'Step 3 of 3';
+    return '';
+  };
 
   return (
     <>
       {!embedded && (
         <button
           onClick={() => setIsOpen(true)}
-          className="fixed bottom-6 right-6 bg-[#a91f23] text-white p-4 rounded-full shadow-lg hover:bg-[#ffa84a] transition-all z-50 flex items-center gap-2"
+          style={{
+            position: 'fixed',
+            bottom: '20px',
+            right: '20px',
+            width: '60px',
+            height: '60px',
+            background: 'linear-gradient(135deg, #a91f23 0%, #7d1418 100%)',
+            borderRadius: '50%',
+            border: 'none',
+            cursor: 'pointer',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            boxShadow: '0 4px 20px rgba(169, 31, 35, 0.4)',
+            zIndex: 99999,
+          }}
         >
-          <MessageCircle size={24} />
-          <span className="font-medium">Chat with Kaia</span>
+          <svg width="28" height="28" fill="white" viewBox="0 0 24 24">
+            <path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/>
+          </svg>
         </button>
       )}
 
-      <AnimatePresence>
-        {isOpen && (
-          <motion.div
-            initial={{ opacity: 0, y: 20, scale: 0.95 }}
-            animate={{ opacity: 1, y: 0, scale: 1 }}
-            exit={{ opacity: 0, y: 20, scale: 0.95 }}
-            className="fixed bottom-6 right-6 w-[380px] h-[550px] bg-white rounded-2xl shadow-2xl z-50 flex flex-col overflow-hidden border border-gray-200"
-          >
-            <div className="bg-[#a91f23] text-white p-4 flex items-center justify-between">
-              <div className="flex items-center gap-3">
-                <div className="w-10 h-10 bg-white/20 rounded-full flex items-center justify-center">
-                  <GraduationCap size={20} />
-                </div>
-                <div>
-                  <h3 className="font-semibold">Kaia</h3>
-                  <p className="text-xs text-white/70">
-                    {collectionStep === 'done' ? 'Ready to help!' : 'Gathering details...'}
-                  </p>
-                </div>
-              </div>
-              <div className="flex gap-2">
-                <select 
-                  value={speechLang} 
-                  onChange={(e) => setSpeechLang(e.target.value)}
-                  className="text-xs bg-white/20 text-white rounded px-1 py-0.5 outline-none cursor-pointer"
-                >
-                  {languages.map(lang => (
-                    <option key={lang.code} value={lang.code} className="text-black">{lang.name}</option>
-                  ))}
-                </select>
-                <button onClick={() => setIsOpen(false)} className="p-1 hover:bg-white/10 rounded">
-                  <Minimize2 size={18} />
-                </button>
-                <button onClick={() => setIsOpen(false)} className="p-1 hover:bg-white/10 rounded">
-                  <X size={18} />
-                </button>
-              </div>
+      {isOpen && (
+        <div style={{
+          position: 'fixed',
+          bottom: embedded ? '0' : '90px',
+          right: embedded ? '0' : '20px',
+          width: embedded ? '100%' : '350px',
+          height: embedded ? '100%' : '480px',
+          maxWidth: '100vw',
+          maxHeight: '100vh',
+          background: 'white',
+          borderRadius: embedded ? '0' : '12px',
+          boxShadow: '0 8px 30px rgba(0,0,0,0.2)',
+          display: 'flex',
+          flexDirection: 'column',
+          overflow: 'hidden',
+          zIndex: 99999,
+        }}>
+          {/* Header */}
+          <div style={{
+            background: 'linear-gradient(135deg, #a91f23 0%, #7d1418 100%)',
+            padding: '12px 15px',
+            display: 'flex',
+            alignItems: 'center',
+            gap: '12px',
+          }}>
+            <div style={{
+              width: '38px',
+              height: '38px',
+              borderRadius: '50%',
+              background: 'rgba(255,255,255,0.2)',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              border: '2px solid rgba(255,255,255,0.3)',
+            }}>
+              <svg width="20" height="20" fill="white" viewBox="0 0 24 24">
+                <path d="M12 3L1 9l4 2.18v6L12 21l7-3.82v-6l2-1.09V17h2V9L12 3zm6.82 6L12 12.72 5.18 9 12 5.28 18.82 9zM17 15.99l-5 2.73-5-2.73v-3.72L12 15l5-2.73v3.72z"/>
+              </svg>
             </div>
-
-            {collectionStep !== 'done' && (
-              <div className="bg-[#ffe9c6] px-4 py-2 flex items-center gap-2 text-xs text-[#a91f23]">
-                <CheckCircle size={14} />
-                <span>{collectionStep === 'name' ? 'Step 1 of 3' : collectionStep === 'phone' ? 'Step 2 of 3' : 'Step 3 of 3'}</span>
-                {userData.name && <span>• {userData.name}</span>}
-              </div>
-            )}
-
-            <div className="flex-1 overflow-y-auto p-4 space-y-3 bg-gray-50">
-              {messages.map((msg) => (
-                <div key={msg.id} className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}>
-                  <div 
-                    className={`max-w-[85%] p-3 rounded-2xl text-sm cursor-pointer ${
-                      msg.role === 'user' 
-                        ? 'bg-[#a91f23] text-white rounded-br-md' 
-                        : 'bg-white border border-gray-200 text-gray-800 rounded-bl-md'
-                    }`}
-                    onClick={() => msg.role === 'assistant' && speak(msg.content)}
-                  >
-                    {msg.content.split('\n').map((line, i) => (
-                      <p key={i} className={i > 0 ? 'mt-1' : ''}>{line}</p>
-                    ))}
-                  </div>
-                </div>
-              ))}
-              
-              {loading && (
-                <div className="flex justify-start">
-                  <div className="bg-white border border-gray-200 p-3 rounded-2xl rounded-bl-md">
-                    <div className="flex gap-1">
-                      <span className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" />
-                      <span className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '0.1s' }} />
-                      <span className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '0.2s' }} />
-                    </div>
-                  </div>
-                </div>
-              )}
-              
-              <div ref={messagesEndRef} />
+            <div style={{ flex: 1 }}>
+              <div style={{ color: 'white', fontSize: '15px', fontWeight: 600 }}>Kaia</div>
+              <div style={{ color: 'rgba(255,255,255,0.8)', fontSize: '11px' }}>Koshys Group of Institutions</div>
             </div>
+            <button
+              onClick={() => setIsOpen(false)}
+              style={{
+                background: 'none',
+                border: 'none',
+                color: 'white',
+                cursor: 'pointer',
+                padding: '5px',
+                fontSize: '16px',
+                opacity: 0.8,
+              }}
+            >
+              ✕
+            </button>
+          </div>
 
-            {collectionStep !== 'done' && collectionStep === 'course' && (
-              <div className="p-2 bg-white border-t flex flex-wrap gap-1 max-h-24 overflow-y-auto">
-                {courses.map(course => (
-                  <button
-                    key={course}
-                    onClick={() => handleCourseSubmit(course)}
-                    className="px-3 py-1 text-xs bg-[#ffe9c6] text-[#a91f23] rounded-full hover:bg-[#ffa84a] hover:text-white transition-colors"
-                  >
-                    {course}
-                  </button>
+          {/* Progress */}
+          {collectionStep !== 'done' && (
+            <div style={{
+              background: '#fff8e6',
+              padding: '8px 15px',
+              fontSize: '11px',
+              color: '#a91f23',
+              fontWeight: 500,
+            }}>
+              {getProgressText()}
+            </div>
+          )}
+
+          {/* Messages */}
+          <div style={{
+            flex: 1,
+            overflowY: 'auto',
+            padding: '15px',
+            background: '#f8f9fa',
+            display: 'flex',
+            flexDirection: 'column',
+            gap: '12px',
+          }}>
+            {messages.map((msg) => (
+              <div
+                key={msg.id}
+                style={{
+                  maxWidth: '85%',
+                  alignSelf: msg.role === 'user' ? 'flex-end' : 'flex-start',
+                  padding: '10px 14px',
+                  borderRadius: '12px',
+                  fontSize: '13px',
+                  lineHeight: 1.5,
+                  background: msg.role === 'user' ? '#a91f23' : 'white',
+                  color: msg.role === 'user' ? 'white' : '#212529',
+                  border: msg.role === 'bot' ? '1px solid #e9ecef' : 'none',
+                  borderBottomLeftRadius: msg.role === 'assistant' ? '3px' : '12px',
+                  borderBottomRightRadius: msg.role === 'user' ? '3px' : '12px',
+                }}
+              >
+                {msg.content.split('\n').map((line, i) => (
+                  <p key={i} style={{ margin: i > 0 ? '4px 0 0' : 0 }}>{line}</p>
                 ))}
               </div>
-            )}
-
-            <div className="p-4 bg-white border-t">
-              <div className="flex gap-2 items-center">
-                <button
-                  onClick={isListening ? stopListening : startListening}
-                  className={`p-2 rounded-lg transition-colors ${isListening ? 'bg-red-500 text-white animate-pulse' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'}`}
-                  title="Speak"
-                >
-                  {isListening ? <MicOff size={20} /> : <Mic size={20} />}
-                </button>
-                
-                <input
-                  type={collectionStep === 'phone' ? 'tel' : 'text'}
-                  value={input}
-                  onChange={(e) => setInput(e.target.value)}
-                  onKeyDown={(e) => e.key === 'Enter' && sendMessage(input)}
-                  placeholder={getPlaceholder()}
-                  className="flex-1 p-2 text-sm border rounded-lg focus:ring-2 focus:ring-[#a91f23] outline-none"
-                />
-
-                <button 
-                  onClick={() => sendMessage(input)}
-                  disabled={loading || (collectionStep !== 'done' && !input.trim())}
-                  className="bg-[#a91f23] text-white p-2 rounded-lg hover:bg-[#ffa84a] disabled:opacity-50"
-                >
-                  <Send size={20} />
-                </button>
-
-                <button
-                  onClick={() => { const lastMsg = messages.filter(m => m.role === 'assistant').pop(); if (lastMsg) speak(lastMsg.content); }}
-                  className={`p-2 rounded-lg transition-colors ${isSpeaking ? 'bg-orange-500 text-white' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'}`}
-                  title="Listen"
-                  disabled={messages.length === 0}
-                >
-                  {isSpeaking ? <VolumeX size={20} /> : <Volume2 size={20} />}
-                </button>
+            ))}
+            {loading && (
+              <div style={{
+                alignSelf: 'flex-start',
+                padding: '10px 14px',
+                borderRadius: '12px',
+                background: 'white',
+                border: '1px solid #e9ecef',
+              }}>
+                <span style={{ animation: 'bounce 1s infinite', margin: '0 2px' }}>•</span>
+                <span style={{ animation: 'bounce 1s infinite 0.2s', margin: '0 2px' }}>•</span>
+                <span style={{ animation: 'bounce 1s infinite 0.4s', margin: '0 2px' }}>•</span>
               </div>
-              {collectionStep === 'done' && (
-                <div className="flex justify-center gap-4 mt-3">
-                  <a href="tel:8088660000" className="flex items-center gap-1 text-xs text-[#a91f23]">
-                    <Phone size={14} /> Call
-                  </a>
-                  <a href="https://apply.kgi.edu.in" target="_blank" className="text-xs text-[#a91f23] font-medium">
-                    Apply Now →
-                  </a>
-                </div>
-              )}
+            )}
+            <div ref={messagesEndRef} />
+          </div>
+
+          {/* Course Buttons */}
+          {collectionStep === 'course' && (
+            <div style={{
+              display: 'flex',
+              flexWrap: 'wrap',
+              gap: '6px',
+              padding: '10px',
+              background: 'white',
+              borderTop: '1px solid #e9ecef',
+            }}>
+              {courses.map(course => (
+                <button
+                  key={course}
+                  onClick={() => handleCourseSubmit(course)}
+                  style={{
+                    padding: '6px 12px',
+                    background: '#fff8e6',
+                    color: '#a91f23',
+                    border: '1px solid #a91f23',
+                    borderRadius: '15px',
+                    fontSize: '11px',
+                    fontWeight: 500,
+                    cursor: 'pointer',
+                  }}
+                >
+                  {course}
+                </button>
+              ))}
             </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
+          )}
+
+          {/* Input */}
+          <div style={{
+            padding: '12px',
+            background: 'white',
+            borderTop: '1px solid #e9ecef',
+            display: 'flex',
+            gap: '8px',
+          }}>
+            <input
+              type={collectionStep === 'phone' ? 'tel' : 'text'}
+              value={input}
+              onChange={(e) => setInput(e.target.value)}
+              onKeyDown={(e) => e.key === 'Enter' && sendMessage(input)}
+              placeholder={getPlaceholder()}
+              style={{
+                flex: 1,
+                padding: '10px 14px',
+                border: '1px solid #dee2e6',
+                borderRadius: '20px',
+                outline: 'none',
+                fontSize: '13px',
+              }}
+            />
+            <button
+              onClick={() => sendMessage(input)}
+              disabled={loading || !input.trim()}
+              style={{
+                width: '38px',
+                height: '38px',
+                background: '#a91f23',
+                color: 'white',
+                border: 'none',
+                borderRadius: '50%',
+                cursor: loading || !input.trim() ? 'not-allowed' : 'pointer',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                opacity: loading || !input.trim() ? 0.5 : 1,
+              }}
+            >
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <line x1="22" x2="11" y1="2" y2="13"/>
+                <polygon points="22 2 15 22 11 13 2 9 22 2"/>
+              </svg>
+            </button>
+          </div>
+
+          {/* Quick Actions */}
+          {collectionStep === 'done' && (
+            <div style={{
+              display: 'flex',
+              justifyContent: 'center',
+              gap: '20px',
+              padding: '10px',
+              background: 'white',
+              borderTop: '1px solid #e9ecef',
+            }}>
+              <a href="tel:8088660000" style={{ fontSize: '12px', color: '#a91f23', textDecoration: 'none', fontWeight: 500 }}>
+                📞 Call Now
+              </a>
+              <a href="https://apply.kgi.edu.in" target="_blank" style={{ fontSize: '12px', color: '#a91f23', textDecoration: 'none', fontWeight: 500 }}>
+                📝 Apply Now
+              </a>
+            </div>
+          )}
+        </div>
+      )}
+
+      <style>{`
+        @keyframes bounce {
+          0%, 60%, 100% { transform: translateY(0); }
+          30% { transform: translateY(-4px); }
+        }
+      `}</style>
     </>
   );
 }
