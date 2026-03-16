@@ -149,6 +149,14 @@ export default function KGIChatWidget({ embedded = false }: { embedded?: boolean
     return '';
   };
 
+  const handleMinimize = () => {
+    if (embedded) {
+      window.parent.postMessage({ type: 'MINIMIZE_KAIA' }, '*');
+    } else {
+      setIsOpen(false);
+    }
+  };
+
   const handleClose = () => {
     if (embedded) {
       window.parent.postMessage({ type: 'CLOSE_KAIA' }, '*');
@@ -208,20 +216,43 @@ export default function KGIChatWidget({ embedded = false }: { embedded?: boolean
               <div style={{ color: 'rgba(255,255,255,0.8)', fontSize: '11px' }}>Koshys Group of Institutions</div>
             </div>
             
-            <button
-              onClick={handleClose}
-              style={{
-                background: 'none',
-                border: 'none',
-                color: 'white',
-                cursor: 'pointer',
-                padding: '5px',
-                fontSize: '16px',
-                opacity: 0.8,
-              }}
-            >
-              ✕
-            </button>
+            <div style={{ display: 'flex', gap: '8px' }}>
+              <button
+                onClick={handleMinimize}
+                style={{
+                  background: 'none',
+                  border: 'none',
+                  color: 'white',
+                  cursor: 'pointer',
+                  padding: '5px',
+                  fontSize: '14px',
+                  opacity: 0.8,
+                }}
+                title="Minimize"
+              >
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                  <polyline points="4 14 10 14 10 20"/>
+                  <polyline points="20 10 14 10 14 4"/>
+                  <line x1="14" y1="10" x2="21" y2="3"/>
+                  <line x1="3" y1="21" x2="10" y2="14"/>
+                </svg>
+              </button>
+              <button
+                onClick={handleClose}
+                style={{
+                  background: 'none',
+                  border: 'none',
+                  color: 'white',
+                  cursor: 'pointer',
+                  padding: '5px',
+                  fontSize: '16px',
+                  opacity: 0.8,
+                }}
+                title="Close"
+              >
+                ✕
+              </button>
+            </div>
           </div>
 
           {/* Progress */}
