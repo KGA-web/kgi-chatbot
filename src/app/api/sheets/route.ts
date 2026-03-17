@@ -69,7 +69,7 @@ export async function POST(request: NextRequest) {
 
     const sheets = await google.sheets({ version: 'v4', auth });
     const now = new Date().toISOString();
-    const row = [phone, name, userType, course, now, 'New'];
+    const row = [now, name, userType, phone, course, '', 'New'];
 
     await sheets.spreadsheets.values.append({
       spreadsheetId,
