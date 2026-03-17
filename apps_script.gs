@@ -41,7 +41,25 @@ function sanitize(input) {
   return String(input).replace(/[<>]/g, '').slice(0, 100);
 }
 
-// For testing
-function doGet() {
+function doGet(e) {
+  var phone = e.parameter.phone;
+  
+  if (phone) {
+    var sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName('Sheet1') || SpreadsheetApp.getActiveSpreadsheet().getActiveSheet();
+    var data = sheet.getDataRange().getValues();
+    
+    for (var i = 1; i < data.length; i++) {
+      if (data[i][3] && data[i][3].toString() === phone) {
+        return ContentService.createTextOutput(JSON.stringify({
+          found: true,
+          name: data[i][1],
+          phone: data[i][3],
+          course: data[i][4]
+        })).setMimeType(ContentService.MimeType.JSON);
+      }
+    }
+    return ContentService.createTextOutput(JSON.stringify({found: false})).setMimeType(ContentService.MimeType.JSON);
+  }
+  
   return ContentService.createTextOutput('KGI Chatbot API is running!');
 }

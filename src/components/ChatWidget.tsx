@@ -284,15 +284,32 @@ export default function KGIChatWidget({ embedded = false }: { embedded?: boolean
     }
     
     setPhoneError('');
-    const updatedData = { ...userData, phone: fullPhone };
-    setUserData(updatedData);
-    await saveToSheets(updatedData);
-    setCollectionStep('course');
+    setUserData({ ...userData, phone: fullPhone });
     
-    setMessages(prev => [...prev, 
-      { id: Date.now().toString(), role: 'user', content: fullPhone },
-      { id: (Date.now()+1).toString(), role: 'assistant', content: `Got it! 📚\n\nWhich course are you interested in?` }
-    ]);
+    try {
+      const res = await fetch(`/api/sheets?phone=${encodeURIComponent(fullPhone)}`);
+      const data = await res.json();
+      
+      if (data.found) {
+        setCollectionStep('course');
+        setMessages(prev => [...prev, 
+          { id: Date.now().toString(), role: 'user', content: fullPhone },
+          { id: (Date.now()+1).toString(), role: 'assistant', content: `Welcome back, ${data.name}! 👋\n\nYou previously inquired about ${data.course || 'our courses'}.\n\nAre you still interested? Or would you like to know about other courses?` }
+        ]);
+      } else {
+        setCollectionStep('course');
+        setMessages(prev => [...prev, 
+          { id: Date.now().toString(), role: 'user', content: fullPhone },
+          { id: (Date.now()+1).toString(), role: 'assistant', content: `Got it! 📚\n\nWhich course are you interested in?` }
+        ]);
+      }
+    } catch (e) {
+      setCollectionStep('course');
+      setMessages(prev => [...prev, 
+        { id: Date.now().toString(), role: 'user', content: fullPhone },
+        { id: (Date.now()+1).toString(), role: 'assistant', content: `Got it! 📚\n\nWhich course are you interested in?` }
+      ]);
+    }
   };
 
   const handleCourseSubmit = async (course: string) => {

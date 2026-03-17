@@ -85,3 +85,31 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: 'Failed to save' }, { status: 500 });
   }
 }
+
+export async function GET(request: NextRequest) {
+  const { searchParams } = new URL(request.url);
+  const phone = searchParams.get('phone');
+  
+  if (!phone) {
+    return NextResponse.json({ error: 'Phone required' }, { status: 400 });
+  }
+
+  const appsScriptUrl = process.env.GOOGLE_APPS_SCRIPT_URL;
+  
+  if (appsScriptUrl) {
+    try {
+      const response = await fetch(`${appsScriptUrl}?phone=${encodeURIComponent(phone)}`);
+      if (response.ok) {
+        const data = await response.json();
+        if (data.found) {
+          return NextResponse.json({ found: true, name: data.name, phone: data.phone, course: data.course });
+        }
+        return NextResponse.json({ found: false });
+      }
+    } catch (e) {
+      console.error('Error checking user:', e);
+    }
+  }
+  
+  return NextResponse.json({ found: false });
+}
