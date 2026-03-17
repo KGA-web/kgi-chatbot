@@ -2,11 +2,21 @@ export const kgiKnowledgeBase = {
   about: {
     name: "Koshys Group of Institutions (KGI)",
     established: "2003",
+    founder: "C. Koshy (visionary educationist)",
+    leaders: {
+      chairman: "Dr. Santhosh Koshy",
+      executiveVP: "Dr. Sereena Shaji"
+    },
     location: "#31/1, Kannur P.O, Hennur-Bagalur Road, Mitganahalli, Kadusonnapanahalli, Bengaluru, Karnataka 562149",
     phone: "808 866 0000",
     email: "info@kgi.edu.in",
     website: "kgi.edu.in",
-    description: "One of India's premier institutes for higher education, established in 2003 in Bangalore. KGI has been achieving milestones year after year in Academics, Placements, Industry Interaction, Corporate Training, and Extracurricular Activities."
+    description: "Koshys Group of Institutions (KGI) is a reputed private educational group located in Bengaluru, Karnataka. Established in 2003 by visionary educationist C. Koshy, the institution was founded with the aim of providing quality professional education and creating industry-ready graduates. Over the years, KGI has grown into a multidisciplinary educational hub offering programs in management, commerce, healthcare, nursing, hospitality, and creative studies.",
+    vision: "Advancing innovation, skill development, and global exposure",
+    approach: "Strong emphasis on experiential learning, internships, industry collaborations, and career-oriented training, enabling students to transition smoothly from campus to corporate life.",
+    facilities: "Modern classrooms, specialized laboratories, libraries, sports facilities, student hostels, and recreational areas, creating a holistic learning environment.",
+    partnerships: "Strong connections with healthcare institutions and industry partners, offering students valuable opportunities for clinical training, internships, and placements.",
+    values: "Academic excellence, professional development, and ethical values"
   },
   institutions: [
     {
@@ -18,6 +28,16 @@ export const kgiKnowledgeBase = {
       name: "Koshys Institute of Health Sciences (KIHS)",
       url: "kgi.edu.in/KIHS",
       courses: ["GNM Nursing", "B.Sc Nursing", "PBBSc Nursing", "M.Sc Nursing", "B.Sc Renal Dialysis", "B.Sc Respiratory Care", "B.Sc AT & OT", "B.Sc MIT", "B.Sc MLT"]
+    },
+    {
+      name: "Koshys Institute of Allied Health Sciences",
+      url: "kgi.edu.in",
+      courses: ["B.Sc Anaesthesia & OT Technology", "B.Sc Medical Imaging Technology", "B.Sc Medical Laboratory Technology", "B.Sc Respiratory Care Technology", "B.Sc Renal Dialysis Technology"]
+    },
+    {
+      name: "Bangalore Little Flower College of Nursing",
+      url: "kgi.edu.in",
+      courses: ["GNM Nursing", "B.Sc Nursing", "M.Sc Nursing"]
     },
     {
       name: "Koshys Institute of Hotel Management",
@@ -268,11 +288,15 @@ CRITICAL RULES — FOLLOW WITHOUT EXCEPTION
 
 VERIFIED KGI FACTS (use as base context)
 
-═══════════════════════════════════════
+════════════════════════════════════════
 
 INSTITUTION: Koshys Group of Institutions (KGI)
 
 ESTABLISHED: 2003
+
+FOUNDER: C. Koshy (visionary educationist)
+
+LEADERSHIP: Dr. Santhosh Koshy (Chairman), Dr. Sereena Shaji (Executive VP)
 
 WEBSITE: https://www.kgi.edu.in
 
@@ -284,11 +308,19 @@ EMAIL: info@kgi.edu.in
 
 APPLY: https://apply.kgi.edu.in
 
+VISION: Innovation, skill development, and global exposure
+
+APPROACH: Strong emphasis on experiential learning, internships, industry collaborations, and career-oriented training
+
 CONSTITUENT INSTITUTIONS:
 
 - KIMS (Management) → kimsbengaluru.edu.in
 
 - KIHS (Health Sciences) → kgi.edu.in/KIHS
+
+- Koshys Institute of Allied Health Sciences → kgi.edu.in
+
+- Bangalore Little Flower College of Nursing → kgi.edu.in
 
 - Koshys Hotel Management → kimsbengaluru.edu.in/bhm
 
