@@ -56,6 +56,81 @@ export const kgiKnowledgeBase = {
     ],
     school: ["CBSE School - Pre KG to Class 12"]
   },
+  programsDetailed: {
+    undergraduate: [
+      {
+        program: "BBA (Bachelor of Business Administration)",
+        specializations: ["General", "Business Analytics", "Digital Marketing", "E-Commerce", "Tourism & Hospitality Management"]
+      },
+      {
+        program: "BBA – Aviation Management",
+        specializations: ["Aviation Management", "Aviation Management – IATA"]
+      },
+      {
+        program: "BCA (Bachelor of Computer Applications)",
+        specializations: ["General", "Artificial Intelligence & Machine Learning", "Cyber Security & Ethical Hacking", "Data Science", "Cloud Computing"]
+      },
+      {
+        program: "B.Com (Bachelor of Commerce)",
+        specializations: ["General", "Logistics & Supply Chain Management", "Business Analytics", "Integrated Course – ACCA", "Integrated Course – CA Foundation"]
+      },
+      {
+        program: "BHM (Bachelor of Hotel Management)",
+        specializations: ["Culinary Arts", "Food & Beverage Service", "Front Office", "Travel & Tourism", "Housekeeping"]
+      },
+      {
+        program: "BVA (Bachelor of Visual Arts)",
+        specializations: ["Animation & Multimedia", "Graphic Design & Applied Arts"]
+      },
+      {
+        program: "B.Sc (Bachelor of Science)",
+        specializations: ["Forensic Science"]
+      }
+    ],
+    postgraduate: [
+      {
+        program: "MBA (Master of Business Administration)",
+        specializations: ["Business Analytics", "Logistics & Supply Chain Management", "Digital Marketing with AI", "HR Analytics", "FinTech & Data Analytics", "Health Care Management"]
+      },
+      {
+        program: "MCA (Master of Computer Applications)",
+        specializations: ["Software Development", "Data Analytics", "Data Science & Machine Learning with Python", "System Programming", "Data Driven Decision Making (Python/R)", "Robotics", "Internet of Things"]
+      }
+    ],
+    nursing: [
+      { program: "GNM (General Nursing & Midwifery)", specializations: [] },
+      { program: "PB B.Sc Nursing (Post Basic B.Sc Nursing)", specializations: [] },
+      { program: "B.Sc Nursing", specializations: [] },
+      { program: "M.Sc Nursing", specializations: [] }
+    ],
+    alliedHealth: [
+      { program: "B.Sc Anaesthesia & OT Technology (AT & OTT)", specializations: [] },
+      { program: "B.Sc Medical Imaging Technology (MIT)", specializations: [] },
+      { program: "B.Sc Medical Laboratory Technology (MLT)", specializations: [] },
+      { program: "B.Sc Respiratory Care Technology (RCT)", specializations: [] },
+      { program: "B.Sc Renal Dialysis Technology (RDT)", specializations: [] }
+    ],
+    certification: [
+      "Full Stack Web Development",
+      "Data Analytics (Excel & Power BI)",
+      "Presentation & Public Speaking Skills",
+      "Digital Marketing",
+      "Web Development",
+      "IATA",
+      "Airline Customer Service",
+      "Logistics",
+      "Airline Reservation",
+      "Cabin Crew Safety & Service",
+      "Cargo Operations",
+      "Videography",
+      "Script Writing",
+      "Safety Crew Operation",
+      "Decoding Stock Market",
+      "Photography",
+      "English Communication & Professional Skills",
+      "UI & UX"
+    ]
+  },
   admissions: {
     applyNow: "https://apply.kgi.edu.in/",
     brochureUG: "https://kimsbengaluru.edu.in/kimsmail",
@@ -232,6 +307,30 @@ Nursing: GNM, B.Sc Nursing, PBBSc, M.Sc Nursing
 Allied Health: B.Sc Renal Dialysis, Respiratory Care, AT&OT, MIT, MLT
 
 School: CBSE Pre-KG to Class 12
+
+DETAILED PROGRAMS & SPECIALIZATIONS:
+
+Undergraduate Programs:
+- BBA: General, Business Analytics, Digital Marketing, E-Commerce, Tourism & Hospitality Management
+- BBA Aviation: Aviation Management, Aviation Management – IATA
+- BCA: General, AI & ML, Cyber Security & Ethical Hacking, Data Science, Cloud Computing
+- B.Com: General, Logistics & Supply Chain Management, Business Analytics, ACCA, CA Foundation
+- BHM: Culinary Arts, Food & Beverage Service, Front Office, Travel & Tourism, Housekeeping
+- BVA: Animation & Multimedia, Graphic Design & Applied Arts
+- B.Sc: Forensic Science
+
+Postgraduate Programs:
+- MBA: Business Analytics, Logistics & Supply Chain Management, Digital Marketing with AI, HR Analytics, FinTech & Data Analytics, Health Care Management
+- MCA: Software Development, Data Analytics, Data Science & ML with Python, System Programming, Data Driven Decision Making, Robotics, IoT
+
+Nursing Programs:
+- GNM, PB B.Sc Nursing, B.Sc Nursing, M.Sc Nursing
+
+Allied Health Science Programs:
+- B.Sc Anaesthesia & OT Technology, Medical Imaging Technology, Medical Laboratory Technology, Respiratory Care Technology, Renal Dialysis Technology
+
+Certification Programs:
+- Full Stack Web Development, Data Analytics, Digital Marketing, IATA, Airline Customer Service, Logistics, Cabin Crew, Cargo Operations, Videography, Photography, UI & UX, and more
 
 CAMPUS: Wi-Fi, boys/girls hostels, sports grounds, mess, green campus
 
