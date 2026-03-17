@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { kgiKnowledgeBase, generateContextPrompt } from '@/data/knowledgeBase';
 
 const MAX_MESSAGE_LENGTH = 1000;
 const MAX_HISTORY_LENGTH = 20;
@@ -113,28 +114,7 @@ export async function POST(request: NextRequest) {
       searchGoogle(message)
     ]);
 
-    const contextPrompt = `
-You are Kaia, the admission assistant for Koshys Group of Institutions (KGI), Bangalore, India.
-Be friendly, helpful, and conversational. Always encourage users to provide their name, phone number, and course interest for follow-up.
-
-IMPORTANT RULES:
-1. For fee-related questions: "For detailed fee information, please contact our admission team at 808 866 0000 or click the Contact button below."
-2. Always offer to collect user details for admission follow-up
-3. Direct to https://apply.kgi.edu.in for applications
-4. Phone: 808 866 0000, Email: info@kgi.edu.in
-5. Address: #31/1, Kannur P.O, Hennur-Bagalur Road, Mitganahalli, Bengaluru, Karnataka 562149
-6. Only answer questions related to KGI or education. For unrelated questions, politely redirect to KGI admissions.
-
-OFFICIAL KGI WEBSITE CONTENT:
-${kgiContent}
-
-GOOGLE SEARCH RESULTS:
-${searchResults}
-
-User Question: ${message}
-
-Provide a helpful, accurate response based on the information above. If the information is not available, suggest calling 808 866 0000 for assistance.
-`;
+    const contextPrompt = generateContextPrompt(message);
 
     const messages = [
       { role: 'system', content: contextPrompt },
