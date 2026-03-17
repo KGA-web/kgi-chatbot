@@ -8,7 +8,7 @@ interface Message {
   content: string;
 }
 
-type CollectionStep = 'name' | 'phone' | 'course' | 'done';
+type CollectionStep = 'phone' | 'name' | 'course' | 'done';
 
 const countryCodes = [
   { code: '+93', country: 'Afghanistan' },
@@ -230,15 +230,23 @@ const courses = [
 
 const STORAGE_KEY = 'kgi_user_data';
 
-function validateIndianPhone(phone: string): { valid: boolean; error: string } {
-  const digits = phone.replace(/\D/g, '');
+function validateIndianPhone(phone: string, withCountryCode: string = '+91'): { valid: boolean; error: string; digits: string } {
+  let digits = phone.replace(/\D/g, '');
+  
+  if (withCountryCode === '+91' && digits.length === 11 && digits.startsWith('0')) {
+    digits = digits.slice(1);
+  }
+  
+  if (withCountryCode === '+91' && digits.length === 12 && digits.startsWith('91')) {
+    digits = digits.slice(2);
+  }
   
   if (digits.length !== 10) {
-    return { valid: false, error: 'Phone number must be exactly 10 digits' };
+    return { valid: false, error: 'Phone number must be exactly 10 digits', digits: '' };
   }
   
   if (!/^[6-9]/.test(digits)) {
-    return { valid: false, error: 'Phone number must start with 6, 7, 8, or 9' };
+    return { valid: false, error: 'Phone number must start with 6, 7, 8, or 9', digits: '' };
   }
   
   const invalidNumbers = [
@@ -248,15 +256,15 @@ function validateIndianPhone(phone: string): { valid: boolean; error: string } {
   ];
   
   if (invalidNumbers.includes(digits)) {
-    return { valid: false, error: 'Please enter a valid phone number' };
+    return { valid: false, error: 'Please enter a valid phone number', digits: '' };
   }
   
   const repeatedPairs = /(.).*\1.*\1/;
   if (repeatedPairs.test(digits)) {
-    return { valid: false, error: 'Phone number cannot have too many repeated digits' };
+    return { valid: false, error: 'Phone number cannot have too many repeated digits', digits: '' };
   }
   
-  return { valid: true, error: '' };
+  return { valid: true, error: '', digits };
 }
 
 export default function KGIChatWidget({ embedded = false }: { embedded?: boolean }) {
@@ -270,7 +278,7 @@ export default function KGIChatWidget({ embedded = false }: { embedded?: boolean
   const [userData, setUserData] = useState({ name: '', phone: '', course: '' });
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
-  const welcomeMessage = "Namaste! 🙏 I'm Kaia - your admission assistant at Koshys Group of Institutions.\n\nMay I know your name?";
+  const welcomeMessage = "Namaste! 🙏 I'm Kaia - your admission assistant at Koshys Group of Institutions.\n\nCould you please share your mobile number?";
 
   useEffect(() => {
     if (isOpen && messages.length === 0) {
@@ -321,24 +329,23 @@ export default function KGIChatWidget({ embedded = false }: { embedded?: boolean
   const handleNameSubmit = async (name: string) => {
     const updatedData = { ...userData, name };
     setUserData(updatedData);
-    setCollectionStep('phone');
+    setCollectionStep('course');
     
     setMessages(prev => [...prev, 
       { id: Date.now().toString(), role: 'user', content: name },
-      { id: (Date.now()+1).toString(), role: 'assistant', content: `Nice to meet you, ${name}! 📱\n\nCould you share your mobile number?` }
+      { id: (Date.now()+1).toString(), role: 'assistant', content: `Nice to meet you, ${name}! 📚\n\nWhich course are you interested in?` }
     ]);
   };
 
-  const handlePhoneSubmit = async (phone: string) => {
-    const digits = phone.replace(/\D/g, '');
-    const validation = validateIndianPhone(digits);
+  const handlePhoneSubmit = async (phoneInput: string) => {
+    const validation = validateIndianPhone(phoneInput, countryCode);
     
     if (!validation.valid) {
       setPhoneError(validation.error);
       return;
     }
     
-    const fullPhone = countryCode + digits;
+    const fullPhone = countryCode + validation.digits;
     setPhoneError('');
     setUserData({ ...userData, phone: fullPhone });
     
@@ -347,23 +354,25 @@ export default function KGIChatWidget({ embedded = false }: { embedded?: boolean
       const data = await res.json();
       
       if (data.found) {
-        setCollectionStep('course');
+        setCollectionStep('done');
+        setUserData({ ...userData, phone: fullPhone, name: data.name, course: data.course || '' });
+        localStorage.setItem(STORAGE_KEY, JSON.stringify({ ...userData, phone: fullPhone, name: data.name, course: data.course || '' }));
         setMessages(prev => [...prev, 
           { id: Date.now().toString(), role: 'user', content: fullPhone },
-          { id: (Date.now()+1).toString(), role: 'assistant', content: `Welcome back, ${data.name}! 👋\n\nYou previously inquired about ${data.course || 'our courses'}.\n\nAre you still interested? Or would you like to know about other courses?` }
+          { id: (Date.now()+1).toString(), role: 'assistant', content: `Welcome back, ${data.name}! 👋\n\nYou previously registered for ${data.course || 'our courses'}.\n\nIs there anything else you'd like to know about KGI?` }
         ]);
       } else {
-        setCollectionStep('course');
+        setCollectionStep('name');
         setMessages(prev => [...prev, 
           { id: Date.now().toString(), role: 'user', content: fullPhone },
-          { id: (Date.now()+1).toString(), role: 'assistant', content: `Got it! 📚\n\nWhich course are you interested in?` }
+          { id: (Date.now()+1).toString(), role: 'assistant', content: `Thank you! 📝\n\nCould you please tell me your name?` }
         ]);
       }
     } catch (e) {
-      setCollectionStep('course');
+      setCollectionStep('name');
       setMessages(prev => [...prev, 
         { id: Date.now().toString(), role: 'user', content: fullPhone },
-        { id: (Date.now()+1).toString(), role: 'assistant', content: `Got it! 📚\n\nWhich course are you interested in?` }
+        { id: (Date.now()+1).toString(), role: 'assistant', content: `Thank you! 📝\n\nCould you please tell me your name?` }
       ]);
     }
   };
@@ -383,13 +392,13 @@ export default function KGIChatWidget({ embedded = false }: { embedded?: boolean
   const sendMessage = async (text: string) => {
     if (!text.trim()) return;
     
-    if (collectionStep === 'name') {
-      handleNameSubmit(text);
+    if (collectionStep === 'phone') {
+      handlePhoneSubmit(text);
       setInput('');
       return;
     }
-    if (collectionStep === 'phone') {
-      handlePhoneSubmit(text);
+    if (collectionStep === 'name') {
+      handleNameSubmit(text);
       setInput('');
       return;
     }
@@ -440,8 +449,8 @@ export default function KGIChatWidget({ embedded = false }: { embedded?: boolean
   };
 
   const getProgressText = () => {
-    if (collectionStep === 'name') return 'Step 1 of 3';
-    if (collectionStep === 'phone') return 'Step 2 of 3';
+    if (collectionStep === 'phone') return 'Step 1 of 3';
+    if (collectionStep === 'name') return 'Step 2 of 3';
     if (collectionStep === 'course') return 'Step 3 of 3';
     return '';
   };
