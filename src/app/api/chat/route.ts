@@ -18,33 +18,58 @@ function isValidRole(role: string): boolean {
 }
 
 async function fetchKGIWebsite(): Promise<string> {
-  try {
-    const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), 5000);
-    
-    const response = await fetch('https://www.kgi.edu.in/', {
-      headers: {
-        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36',
-      },
-      signal: controller.signal,
-      next: { revalidate: 3600 }
-    });
-    clearTimeout(timeoutId);
-    
-    const html = await response.text();
-    
-    const text = html
-      .replace(/<script[^>]*>[\s\S]*?<\/script>/gi, '')
-      .replace(/<style[^>]*>[\s\S]*?<\/style>/gi, '')
-      .replace(/<[^>]+>/g, ' ')
-      .replace(/\s+/g, ' ')
-      .slice(0, 8000);
-    
-    return text;
-  } catch (error) {
-    console.error('Failed to fetch KGI website:', error);
-    return '';
-  }
+  const pages = [
+    'https://www.kgi.edu.in/',
+    'https://www.kgi.edu.in/AboutWhyKGI',
+    'https://www.kgi.edu.in/mission-and-vission',
+    'https://www.kgi.edu.in/milestone',
+    'https://www.kgi.edu.in/FounderMessageKGI',
+    'https://www.kgi.edu.in/leadership',
+    'https://www.kgi.edu.in/industrial-association',
+    'https://www.kgi.edu.in/KIHS/',
+    'https://www.kgi.edu.in/KIHS/BSCren',
+    'https://www.kgi.edu.in/KIHS/BSCres',
+    'https://www.kgi.edu.in/KIHS/bscOtt',
+    'https://www.kgi.edu.in/KIHS/bscMit',
+    'https://www.kgi.edu.in/KIHS/BSCmlt',
+    'https://www.kgi.edu.in/ContactKGI',
+    'https://kimsbengaluru.edu.in/',
+  ];
+
+  const headers = {
+    'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36',
+  };
+
+  const results = await Promise.allSettled(
+    pages.map(async (url) => {
+      try {
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 5000);
+        
+        const response = await fetch(url, { headers, signal: controller.signal });
+        clearTimeout(timeoutId);
+        
+        if (!response.ok) return '';
+        
+        const html = await response.text();
+        const text = html
+          .replace(/<script[^>]*>[\s\S]*?<\/script>/gi, '')
+          .replace(/<style[^>]*>[\s\S]*?<\/style>/gi, '')
+          .replace(/<[^>]+>/g, ' ')
+          .replace(/\s+/g, ' ')
+          .slice(0, 3000);
+        
+        return `[${url}]\n${text}\n`;
+      } catch (e) {
+        return '';
+      }
+    })
+  );
+
+  return results
+    .filter((r): r is PromiseFulfilledResult<string> => r.status === 'fulfilled' && !!r.value)
+    .map(r => r.value)
+    .join('\n\n');
 }
 
 async function searchGoogle(query: string): Promise<string> {

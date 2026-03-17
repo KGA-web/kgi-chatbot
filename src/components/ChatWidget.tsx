@@ -228,6 +228,37 @@ const courses = [
   "B.Sc Nursing", "GNM Nursing", "Hotel Management"
 ];
 
+const STORAGE_KEY = 'kgi_user_data';
+
+function validateIndianPhone(phone: string): { valid: boolean; error: string } {
+  const digits = phone.replace(/\D/g, '');
+  
+  if (digits.length !== 10) {
+    return { valid: false, error: 'Phone number must be exactly 10 digits' };
+  }
+  
+  if (!/^[6-9]/.test(digits)) {
+    return { valid: false, error: 'Phone number must start with 6, 7, 8, or 9' };
+  }
+  
+  const invalidNumbers = [
+    '0000000000', '1111111111', '2222222222', '3333333333', '4444444444',
+    '5555555555', '6666666666', '7777777777', '8888888888', '9999999999',
+    '1234567890', '9876543210', '0123456789', '0987654321'
+  ];
+  
+  if (invalidNumbers.includes(digits)) {
+    return { valid: false, error: 'Please enter a valid phone number' };
+  }
+  
+  const repeatedPairs = /(.).*\1.*\1/;
+  if (repeatedPairs.test(digits)) {
+    return { valid: false, error: 'Phone number cannot have too many repeated digits' };
+  }
+  
+  return { valid: true, error: '' };
+}
+
 export default function KGIChatWidget({ embedded = false }: { embedded?: boolean }) {
   const [isOpen, setIsOpen] = useState(embedded);
   const [messages, setMessages] = useState<Message[]>([]);
@@ -243,9 +274,33 @@ export default function KGIChatWidget({ embedded = false }: { embedded?: boolean
 
   useEffect(() => {
     if (isOpen && messages.length === 0) {
+      const savedData = localStorage.getItem(STORAGE_KEY);
+      if (savedData) {
+        try {
+          const parsed = JSON.parse(savedData);
+          if (parsed.name && parsed.phone && parsed.course) {
+            setUserData(parsed);
+            setCollectionStep('done');
+            setMessages([{ 
+              id: '1', 
+              role: 'assistant', 
+              content: `Welcome back, ${parsed.name}! 👋\n\nYou previously registered for ${parsed.course}.\n\nIs there anything else you'd like to know about KGI?` 
+            }]);
+            return;
+          }
+        } catch (e) {
+          console.error('Failed to parse saved data', e);
+        }
+      }
       setMessages([{ id: '1', role: 'assistant', content: welcomeMessage }]);
     }
   }, [isOpen]);
+
+  useEffect(() => {
+    if (collectionStep === 'done' && userData.name && userData.phone && userData.course) {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(userData));
+    }
+  }, [collectionStep, userData]);
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -275,14 +330,15 @@ export default function KGIChatWidget({ embedded = false }: { embedded?: boolean
   };
 
   const handlePhoneSubmit = async (phone: string) => {
-    const fullPhone = countryCode + phone.replace(/\D/g, '');
-    const digitCount = fullPhone.replace(/\D/g, '').length;
+    const digits = phone.replace(/\D/g, '');
+    const validation = validateIndianPhone(digits);
     
-    if (digitCount < 10 || digitCount > 15) {
-      setPhoneError('Please enter a valid mobile number with country code');
+    if (!validation.valid) {
+      setPhoneError(validation.error);
       return;
     }
     
+    const fullPhone = countryCode + digits;
     setPhoneError('');
     setUserData({ ...userData, phone: fullPhone });
     
