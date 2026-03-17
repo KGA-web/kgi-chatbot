@@ -12,8 +12,11 @@ function sanitizeField(input: string): string {
 }
 
 function isValidPhone(phone: string): boolean {
-  const cleaned = phone.replace(/\D/g, '');
-  return cleaned.length >= 10 && cleaned.length <= 15;
+  const phoneRegex = /^\+[1-9]\d{1,14}$/;
+  const cleaned = phone.replace(/[\s\-()]/g, '');
+  if (!phoneRegex.test(cleaned)) return false;
+  const digitCount = cleaned.replace(/\D/g, '').length;
+  return digitCount >= 10 && digitCount <= 15;
 }
 
 export async function POST(request: NextRequest) {
