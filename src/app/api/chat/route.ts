@@ -19,12 +19,18 @@ function isValidRole(role: string): boolean {
 
 async function fetchKGIWebsite(): Promise<string> {
   try {
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 5000);
+    
     const response = await fetch('https://www.kgi.edu.in/', {
       headers: {
         'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36',
       },
+      signal: controller.signal,
       next: { revalidate: 3600 }
     });
+    clearTimeout(timeoutId);
+    
     const html = await response.text();
     
     const text = html
@@ -152,11 +158,13 @@ export async function POST(request: NextRequest) {
 
   } catch (error: any) {
     console.error('Chat API Error:', error);
+    const errorMessage = error?.message || error?.toString() || 'Unknown error';
     
     return NextResponse.json(
       { 
         reply: 'I apologize, but I\'m experiencing technical difficulties. Please call 808 866 0000 for immediate assistance or try again later.',
-        success: false
+        success: false,
+        debug: errorMessage
       },
       { status: 500 }
     );
