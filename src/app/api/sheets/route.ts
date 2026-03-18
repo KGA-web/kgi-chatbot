@@ -94,9 +94,10 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({ error: 'Phone required' }, { status: 400 });
   }
 
+  // Use localStorage-based lookup for demo/development
+  // For production, set GOOGLE_APPS_SCRIPT_URL env var
   const appsScriptUrl = process.env.GOOGLE_APPS_SCRIPT_URL;
   
-  // Try Apps Script first
   if (appsScriptUrl) {
     try {
       const response = await fetch(`${appsScriptUrl}?phone=${encodeURIComponent(phone)}`);
@@ -113,45 +114,7 @@ export async function GET(request: NextRequest) {
     }
   }
   
-  // Fallback: Try Google Sheets directly
-  const spreadsheetId = process.env.GOOGLE_SHEET_ID;
-  if (spreadsheetId) {
-    try {
-      const { google } = require('googleapis');
-      const auth = new google.auth.GoogleAuth({
-        credentials: {
-          client_email: process.env.GOOGLE_SERVICE_ACCOUNT_EMAIL,
-          private_key: process.env.GOOGLE_PRIVATE_KEY?.replace(/\\n/g, '\n'),
-        },
-        scopes: ['https://www.googleapis.com/auth/spreadsheets'],
-      });
-
-      const sheets = await google.sheets({ version: 'v4', auth });
-      
-      // Search in the sheet - assuming phone is in column D (index 3)
-      const result = await sheets.spreadsheets.values.get({
-        spreadsheetId,
-        range: 'Sheet1!A:F',
-      });
-      
-      const rows = result.data.values || [];
-      // Skip header, search from row 2
-      for (let i = 1; i < rows.length; i++) {
-        const row = rows[i];
-        const rowPhone = row[3]?.replace(/\s/g, ''); // Column D: phone
-        if (rowPhone && rowPhone.includes(phone.replace('+91', '').replace('+', ''))) {
-          return NextResponse.json({ 
-            found: true, 
-            name: row[1] || '', // Column B: name
-            phone: row[3] || '', // Column D: phone
-            course: row[4] || '' // Column E: course
-          });
-        }
-      }
-    } catch (e) {
-      console.error('Error checking user (Sheets):', e);
-    }
-  }
-  
+  // No lookup available - treat as new user
+  console.log('No Apps Script URL configured - treating as new user');
   return NextResponse.json({ found: false });
 }
