@@ -147,22 +147,51 @@ leadership: {
     { q: "What is the campus location?", a: "#31/1, Hennur-Bagalur Road, Kannur P.O., Bengaluru, Karnataka 562149" },
     { q: "Are there hostel facilities?", a: "Yes, separate hostels for boys and girls with Wi-Fi, mess, laundry" },
     { q: "What is the placement record?", a: "Highest package up to 10 LPA with 100% placement assistance" },
-    { q: "Who is the Director of KIMS?", a: "Dr. Prakash B Nayak - Professor/Director with 30 years experience and PhD" },
+    { q: "Who is the Director of KIMS?", a: "Dr. Prakash B Nayak - Professor/Director with 32 years experience and PhD" },
     { q: "Who is the Chairman of KGI?", a: "Dr. Santhosh Koshy - leads KGI with focus on innovation, infrastructure and experiential learning" },
+    { q: "Who is the HOD of BVA?", a: "Mr. Manikishore is the HOD of BVA (Bachelor of Visual Arts) - B Tech graduate with Diploma in VFX & Film Making, 6 years experience" },
+    { q: "Who is the HOD of MBA?", a: "Dr. Prakash B Nayak is the Director/Professor of MBA department with 32 years experience and PhD" },
+    { q: "Who is the HOD of BBA?", a: "Ms. Smitha Biji is the HOD of BBA with 9 years experience and MBA qualification" },
+    { q: "Who is the HOD of B.Com?", a: "Ms. Maria Mendis is the HOD of B.Com with 11 years experience and MCom qualification" },
+    { q: "Who is the HOD of BCA?", a: "Dr. Reeja Jose Pavanathil is the HOD of BCA with 20 years experience and MCA, PhD qualification" },
+    { q: "Who is the HOD of BA-CPJ?", a: "Ms. Lisha Nilesh is the HOD of BA-CPJ (Criminology, Psychology & Journalism) with 17 years experience and MA English qualification" },
+    { q: "Who is the HOD of BBA Aviation?", a: "Ms. Amalasen is the HOD of BBA Aviation with 15 years experience and MBA qualification" },
     { q: "What is the fee structure?", a: "Contact 808 866 0000 for detailed fee information" }
   ]
 };
 
 export function generateContextPrompt(userQuery: string): string {
   const kb = kgiKnowledgeBase;
+  
+  const facultyInfo = `
+FACULTY & HOD DETAILS:
+- BBA HOD: Ms. Smitha Biji (MBA, 9 years)
+- BBA Aviation HOD: Ms. Amalasen (MBA, 15 years)
+- B.Com HOD: Ms. Maria Mendis (MCom, 11 years)
+- BCA HOD: Dr. Reeja Jose Pavanathil (MCA, PhD, 20 years)
+- BVA HOD: Mr. Manikishore (BTech, VFX, 6 years)
+- BA-CPJ HOD: Ms. Lisha Nilesh (MA English, 17 years)
+- MBA Director: Dr. Prakash B Nayak (PhD, 32 years)
+- Academic Advisor: Dr. Sara Kunnath (PhD, 30 years)
+- IQAC Coordinator: Dr. Gopi G (PhD, 16 years)
+- Research Head: Dr. Sudarkodi (PhD, 19 years)
+
+Key Faculty:
+MBA: Dr. M.K. Jagadeesh Babu (Assoc Prof, PhD, 17 yrs), Dr. Gopi G (Asst Prof, PhD, 16 yrs), Ms. Shilpa B S (MBA, 12 yrs), Ms. Ameena Firdose (MBA, 13 yrs)
+BBA: Dr. Rabina (PhD, 10 yrs), Mr. Muniraj H M (MA Kannada, 18 yrs), Ms. Linnu Jose (MA, 14 yrs), Mr. Suresh N V (MCom, 7 yrs)
+BCA: Mr. Rajesh D (MSc, 18 yrs), Mr. Veera Muthu P (MCA, 9 yrs)
+BVA: Mr. Sagar Deshpande (MVA, 9 yrs), Mr. Yanni T (MSc Electronic Media, 8 yrs)
+`;
+  
   return `
 You are KAIA, the official AI assistant for Koshys Group of Institutions (KGI), Bangalore.
 
-RULES:
+RULES - IMPORTANT:
 1. Only answer about KGI. For other topics, say "I can only help with KGI-related queries."
-2. Never guess fees - direct to 808 866 0000 or apply.kgi.edu.in
-3. Use web search for specific details about courses, admissions, events
-4. Be friendly, concise. Offer to help with admissions after answering.
+2. NEVER search the web for faculty/HOD names - they are provided in the knowledge base below
+3. For questions about HOD, faculty, departments - USE THE KNOWLEDGE BASE below, do NOT search web
+4. Never guess fees - direct to 808 866 0000 or apply.kgi.edu.in
+5. Be friendly, concise. Offer to help with admissions after answering.
 
 KGI FACTS:
 - Established: ${kb.established}
@@ -177,6 +206,8 @@ KGI FACTS:
 - Nursing: ${kb.courses.nursing.join(', ')}
 - Highest Placement: ${kb.placements.highestPackage}
 - Scholarships: ${kb.scholarships}
+
+${facultyInfo}
 
 IMPORTANT: All fees must be paid directly to Institute accounts. No responsibility for fees paid to consultants.
 
