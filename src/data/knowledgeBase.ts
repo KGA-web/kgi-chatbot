@@ -15,18 +15,63 @@ export const kgiKnowledgeBase = {
   
   philosophy: "ICM Model - Initiate, Create, Manage",
 
-  leadership: {
+leadership: {
     chairman: { name: "Dr. Santhosh Koshy", description: "Leads KGI with focus on innovation, infrastructure, and experiential learning" },
-    director: { name: "Dr. Prakash B Nayak", experience: "30 years", qualification: "PhD", description: "Director Academics at KIMS - fastest growing institute imparting value-based education in Management, Commerce, CS, Aviation & Logistics" },
-    academicAdvisor: { name: "Dr. Sara Kunnath", description: "Focuses on skill-based education and industry-corporate connections" },
-    placementHead: { name: "Arun N", email: "placementhead@kgi.edu.in" }
+    director: { name: "Dr. Prakash B Nayak", experience: "32 Years", qualification: "PhD", description: "Director Academics at KIMS - fastest growing institute imparting value-based education in Management, Commerce, CS, Aviation & Logistics" },
+    academicAdvisor: { name: "Dr. Sara Kunnath", experience: "30 Years", qualification: "PhD", description: "Focuses on skill-based education and industry-corporate connections" },
+    placementHead: { name: "Arun N", email: "placementhead@kgi.edu.in" },
+    iqacCoordinator: { name: "Dr. Gopi G", experience: "16 Years", qualification: "PhD" }
   },
 
-  researchGuides: [
-    { name: "Dr. Prakash B Nayak", designation: "Professor/Director, MBA", experience: "30 years", qualification: "PhD" },
-    { name: "Dr. Sudarkodi", designation: "Associate Professor, MBA", experience: "19 years", qualification: "PhD" },
-    { name: "Dr. Vincent Raj Kumar", designation: "Associate Professor, MBA", experience: "12 years", qualification: "PhD" }
-  ],
+  faculty: {
+    mba: [
+      { name: "Dr. M.K. Jagadeesh Babu", designation: "Associate Professor", qualification: "PhD", experience: "17 Years" },
+      { name: "Dr. Gopi G", designation: "Asst Professor/IQAC Coordinator", qualification: "PhD", experience: "16 Years" },
+      { name: "Ms. Shilpa B S", designation: "Asst Professor", qualification: "MBA", experience: "12 Years" },
+      { name: "Ms. Ameena Firdose", designation: "Asst Professor", qualification: "MBA", experience: "13 Years" }
+    ],
+    bba: [
+      { name: "Ms. Smitha Biji", designation: "HOD/Asst Professor", qualification: "MBA", experience: "9 Years" },
+      { name: "Dr. Rabina", designation: "Asst Professor", qualification: "PhD", experience: "10 Years" },
+      { name: "Mr. Muniraj H M", designation: "Asst Professor", qualification: "MA Kannada", experience: "18 Years" },
+      { name: "Mr. Suresh N V", designation: "Asst Professor", qualification: "MCom", experience: "7 Years" },
+      { name: "Ms. Linnu Jose", designation: "Asst Professor", qualification: "MA", experience: "14 Years" },
+      { name: "Ms. Indumathi V", designation: "Asst Professor", qualification: "MBA", experience: "6 Years" },
+      { name: "Ms. Rajni Gaur", designation: "Asst Professor", qualification: "MBA", experience: "14 Years" },
+      { name: "Mr. Ranganatha K N", designation: "Asst Professor", qualification: "MCom", experience: "14 Years" },
+      { name: "Ms. Asha T", designation: "Asst Professor", qualification: "MCom", experience: "3 Years" },
+      { name: "Mr. Mahendran D", designation: "Asst Professor", qualification: "MBA", experience: "12 Years" }
+    ],
+    bbaAviation: [
+      { name: "Ms. Amalasen", designation: "HOD/Asst Professor", qualification: "MBA", experience: "15 Years" },
+      { name: "Mr. Vibin T T", designation: "Asst Professor", qualification: "MBA", experience: "4 Years" }
+    ],
+    bcom: [
+      { name: "Ms. Maria Mendis", designation: "HOD/Asst Professor", qualification: "MCom", experience: "11 Years" },
+      { name: "Mr. Shaik Khaleel Ahamed", designation: "Asst Professor", qualification: "MCom", experience: "5 Years" },
+      { name: "Ms. Deeksha B Kailash", designation: "Asst Professor", qualification: "MCom", experience: "1.4 Years" },
+      { name: "Ms. Mala Srinivas", designation: "Asst Professor", qualification: "MCom", experience: "8 Years" }
+    ],
+    bca: [
+      { name: "Dr. Reeja Jose Pavanathil", designation: "HOD", qualification: "MCA, PhD", experience: "20 Years" },
+      { name: "Mr. Rajesh D", designation: "Asst Professor", qualification: "MSc", experience: "18 Years" },
+      { name: "Mr. Veera Muthu P", designation: "Asst Professor", qualification: "MCA", experience: "9 Years" },
+      { name: "Mr. Sajeev Manikkoth", designation: "Asst Professor", qualification: "MTech", experience: "2 Years" },
+      { name: "Ms. S Jayashree Ananth", designation: "Asst Professor", qualification: "M.Sc, M.Phil, B.Ed, PhD", experience: "20 Years" }
+    ],
+    bva: [
+      { name: "Mr. Manikishore", designation: "HOD/Asst Professor", qualification: "B Tech, Diploma in VFX & Film Making", experience: "6 Years" },
+      { name: "Mr. Sagar Deshpande", designation: "Asst Professor", qualification: "MVA", experience: "9 Years" },
+      { name: "Mr. Yanni T", designation: "Asst Professor", qualification: "MSc Electronic Media, PG DFT", experience: "8 Years" },
+      { name: "Mr. Srinile", designation: "Asst Professor", qualification: "MVA", experience: "4 Years" },
+      { name: "Mr. Vivek", designation: "Asst Professor", qualification: "MVA", experience: "4 Years" }
+    ],
+    baCpj: [
+      { name: "Ms. Lisha Nilesh", designation: "HOD/Asst Professor", qualification: "MA English", experience: "17 Years" },
+      { name: "Ms. Shabnam Ahmed", designation: "Asst Professor", qualification: "MA Hindi", experience: "17 Years" },
+      { name: "Ms. Mousmee Das", designation: "Asst Professor", qualification: "B.Ed, MA, M.Phil, PhD", experience: "13 Years" }
+    ]
+  },
 
   iqac: { coordinator: "Dr. Gopi G", department: "MBA" },
 
@@ -75,9 +120,18 @@ export const kgiKnowledgeBase = {
   campus: {
     area: "7.13 acres",
     wifi: true,
-    facilities: ["Smart classrooms", "Library with DELNET", "Computer labs", "Sports ground", "Gym", "Hostels", "Cafeteria", "Auditorium"],
-    hostels: "Separate for boys and girls with Wi-Fi, mess, laundry",
-    greenCampus: true
+    facilities: ["Smart classrooms", "Library with DELNET", "Computer labs", "Sports ground", "Gym", "Hostels", "Cafeteria", "Auditorium", "Prayer Hall", "Transportation"],
+    sports: {
+      outdoor: ["Natural Football Turf", "Basketball Court", "Volleyball Court", "Throwball Court", "Kabaddi Court", "Long Jump", "High Jump"],
+      indoor: ["Carrom", "Chess", "Table Tennis", "Badminton Courts"],
+      events: ["Ganador Soccer Event (annual)", "FitFlex Challenge (annual fitness event)"]
+    },
+    gym: "State-of-the-art with treadmills, elliptical, bikes, free weights, resistance machines. Group fitness: Yoga, Pilates, Aerobics",
+    hostels: "Separate for boys and girls with Wi-Fi, mess, laundry, water purifiers",
+    cafeteria: "Spacious with veg/non-veg, snacks, beverages. Signature event: Taste Fest (annual)",
+    auditorium: "State-of-the-art with sound system, lighting, stage, green rooms. Signature event: Koshys Cultural Fest",
+    greenCampus: "Lush green with lawns, gardens, trees. Green Initiative celebrated annually",
+    transportation: "Well-maintained buses and vans with multiple pickup/drop points"
   },
 
   importantNotices: [
