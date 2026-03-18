@@ -3,6 +3,7 @@ export const kgiKnowledgeBase = {
   established: 2003,
   founder: "Late Shri. C. Koshy",
   chairman: "Dr. Santhosh Koshy",
+  director: "Dr. Prakash B Nayak",
   location: "#31/1, Hennur-Bagalur Road, Kannur P.O., Mitganahalli, Bengaluru, Karnataka 562149",
   phone: "808 866 0000",
   email: "info@kgi.edu.in",
@@ -13,6 +14,27 @@ export const kgiKnowledgeBase = {
   mission: "Nurturing an Institutional Environment for Excellence in Education and Positive Transformation in Students & Society.",
   
   philosophy: "ICM Model - Initiate, Create, Manage",
+
+  leadership: {
+    chairman: { name: "Dr. Santhosh Koshy", description: "Leads KGI with focus on innovation, infrastructure, and experiential learning" },
+    director: { name: "Dr. Prakash B Nayak", experience: "30 years", qualification: "PhD", description: "Director Academics at KIMS - fastest growing institute imparting value-based education in Management, Commerce, CS, Aviation & Logistics" },
+    academicAdvisor: { name: "Dr. Sara Kunnath", description: "Focuses on skill-based education and industry-corporate connections" },
+    placementHead: { name: "Arun N", email: "placementhead@kgi.edu.in" }
+  },
+
+  researchGuides: [
+    { name: "Dr. Prakash B Nayak", designation: "Professor/Director, MBA", experience: "30 years", qualification: "PhD" },
+    { name: "Dr. Sudarkodi", designation: "Associate Professor, MBA", experience: "19 years", qualification: "PhD" },
+    { name: "Dr. Vincent Raj Kumar", designation: "Associate Professor, MBA", experience: "12 years", qualification: "PhD" }
+  ],
+
+  iqac: { coordinator: "Dr. Gopi G", department: "MBA" },
+
+  advisoryBoard: [
+    { name: "Dr. Sandeep Shastri", role: "Director of Academics, Nitte Education Trust", background: "Former Vice Chancellor, Jagran Lakecity University. 10 books, 60+ research articles" },
+    { name: "Dr. Y. Shekhar", role: "Centre for Digital Enterprise, IIM Udaipur", background: "30+ years in IT industry, PhD in future of managerial work" },
+    { name: "Mr. Tony Augustine", role: "Corporate Sales B2B, Toyota Kirloskar Motors", background: "National Sales Head, MBA (Marketing & Finance), BTech from NIT Calicut" }
+  ],
   
   institutions: [
     { name: "KIMS (Management Studies)", url: "kimsbengaluru.edu.in", courses: ["BBA", "BBA Aviation", "B.Com", "B.Com Logistics", "BCA", "MBA", "MCA"] },
@@ -71,6 +93,8 @@ export const kgiKnowledgeBase = {
     { q: "What is the campus location?", a: "#31/1, Hennur-Bagalur Road, Kannur P.O., Bengaluru, Karnataka 562149" },
     { q: "Are there hostel facilities?", a: "Yes, separate hostels for boys and girls with Wi-Fi, mess, laundry" },
     { q: "What is the placement record?", a: "Highest package up to 10 LPA with 100% placement assistance" },
+    { q: "Who is the Director of KIMS?", a: "Dr. Prakash B Nayak - Professor/Director with 30 years experience and PhD" },
+    { q: "Who is the Chairman of KGI?", a: "Dr. Santhosh Koshy - leads KGI with focus on innovation, infrastructure and experiential learning" },
     { q: "What is the fee structure?", a: "Contact 808 866 0000 for detailed fee information" }
   ]
 };
@@ -88,6 +112,8 @@ RULES:
 
 KGI FACTS:
 - Established: ${kb.established}
+- Chairman: ${kb.chairman}
+- Director: ${kb.director}
 - Phone: ${kb.phone} | Email: ${kb.email}
 - Apply: ${kb.applyNow}
 - Vision: ${kb.vision}
