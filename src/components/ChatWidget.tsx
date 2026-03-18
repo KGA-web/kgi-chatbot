@@ -225,7 +225,8 @@ const countryCodes = [
 
 const courses = [
   "BBA", "BCA", "B.Com", "MBA", "MCA", 
-  "B.Sc Nursing", "GNM Nursing", "Hotel Management"
+  "B.Sc Nursing", "GNM Nursing", "Hotel Management",
+  "BHM", "BVA", "BA", "M.Sc"
 ];
 
 const STORAGE_KEY = 'kgi_user_data';
@@ -265,6 +266,11 @@ function validateIndianPhone(phone: string, withCountryCode: string = '+91'): { 
   }
   
   return { valid: true, error: '', digits };
+}
+
+function isCourseName(input: string): boolean {
+  const upper = input.toUpperCase().trim();
+  return courses.some(c => upper === c.toUpperCase() || upper.includes(c.toUpperCase()));
 }
 
 export default function KGIChatWidget({ embedded = false }: { embedded?: boolean }) {
@@ -327,7 +333,24 @@ export default function KGIChatWidget({ embedded = false }: { embedded?: boolean
   };
 
   const handleNameSubmit = async (name: string) => {
-    const updatedData = { ...userData, name };
+    // Validate name - don't accept course names
+    if (isCourseName(name)) {
+      setMessages(prev => [...prev, 
+        { id: Date.now().toString(), role: 'user', content: name },
+        { id: (Date.now()+1).toString(), role: 'assistant', content: `I understand you're interested in ${name}! 😊\n\nCould you please tell me your name first?` }
+      ]);
+      return;
+    }
+    
+    if (name.trim().length < 2) {
+      setMessages(prev => [...prev, 
+        { id: Date.now().toString(), role: 'user', content: name },
+        { id: (Date.now()+1).toString(), role: 'assistant', content: `Please enter a valid name (at least 2 characters).` }
+      ]);
+      return;
+    }
+    
+    const updatedData = { ...userData, name: name.trim() };
     setUserData(updatedData);
     setCollectionStep('course');
     
