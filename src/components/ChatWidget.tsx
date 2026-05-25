@@ -231,38 +231,276 @@ const courses = [
 
 const STORAGE_KEY = 'kgi_user_data';
 
-function validateIndianPhone(phone: string, withCountryCode: string = '+91'): { valid: boolean; error: string; digits: string } {
+const countryPhoneConfig: Record<string, { minLen: number; maxLen: number; startsWith?: RegExp }> = {
+  '+93': { minLen: 9, maxLen: 9 },
+  '+355': { minLen: 9, maxLen: 10 },
+  '+213': { minLen: 9, maxLen: 10 },
+  '+1-268': { minLen: 10, maxLen: 10 },
+  '+54': { minLen: 10, maxLen: 11 },
+  '+374': { minLen: 8, maxLen: 8 },
+  '+61': { minLen: 9, maxLen: 10 },
+  '+43': { minLen: 10, maxLen: 12 },
+  '+994': { minLen: 9, maxLen: 10 },
+  '+1-242': { minLen: 10, maxLen: 10 },
+  '+973': { minLen: 8, maxLen: 8 },
+  '+880': { minLen: 10, maxLen: 10 },
+  '+1-246': { minLen: 10, maxLen: 10 },
+  '+375': { minLen: 9, maxLen: 9 },
+  '+32': { minLen: 9, maxLen: 10 },
+  '+501': { minLen: 7, maxLen: 7 },
+  '+229': { minLen: 10, maxLen: 10 },
+  '+975': { minLen: 8, maxLen: 8 },
+  '+591': { minLen: 8, maxLen: 8 },
+  '+387': { minLen: 8, maxLen: 8 },
+  '+267': { minLen: 8, maxLen: 8 },
+  '+55': { minLen: 10, maxLen: 11 },
+  '+673': { minLen: 7, maxLen: 7 },
+  '+359': { minLen: 9, maxLen: 9 },
+  '+226': { minLen: 8, maxLen: 8 },
+  '+257': { minLen: 8, maxLen: 8 },
+  '+855': { minLen: 9, maxLen: 10 },
+  '+237': { minLen: 9, maxLen: 9 },
+  '+1': { minLen: 10, maxLen: 10 },
+  '+238': { minLen: 7, maxLen: 7 },
+  '+1-345': { minLen: 10, maxLen: 10 },
+  '+236': { minLen: 8, maxLen: 8 },
+  '+235': { minLen: 8, maxLen: 8 },
+  '+56': { minLen: 9, maxLen: 9 },
+  '+86': { minLen: 11, maxLen: 11 },
+  '+57': { minLen: 10, maxLen: 10 },
+  '+269': { minLen: 7, maxLen: 7 },
+  '+506': { minLen: 8, maxLen: 8 },
+  '+385': { minLen: 9, maxLen: 9 },
+  '+53': { minLen: 8, maxLen: 8 },
+  '+357': { minLen: 8, maxLen: 8 },
+  '+420': { minLen: 9, maxLen: 9 },
+  '+45': { minLen: 8, maxLen: 8 },
+  '+253': { minLen: 8, maxLen: 8 },
+  '+1-767': { minLen: 10, maxLen: 10 },
+  '+1-809': { minLen: 10, maxLen: 10 },
+  '+670': { minLen: 8, maxLen: 8 },
+  '+593': { minLen: 9, maxLen: 10 },
+  '+20': { minLen: 10, maxLen: 10 },
+  '+503': { minLen: 8, maxLen: 8 },
+  '+240': { minLen: 9, maxLen: 9 },
+  '+291': { minLen: 7, maxLen: 7 },
+  '+372': { minLen: 7, maxLen: 8 },
+  '+251': { minLen: 9, maxLen: 9 },
+  '+500': { minLen: 5, maxLen: 5 },
+  '+679': { minLen: 7, maxLen: 7 },
+  '+358': { minLen: 9, maxLen: 12 },
+  '+33': { minLen: 9, maxLen: 9 },
+  '+241': { minLen: 7, maxLen: 8 },
+  '+220': { minLen: 7, maxLen: 7 },
+  '+995': { minLen: 9, maxLen: 9 },
+  '+49': { minLen: 10, maxLen: 11 },
+  '+233': { minLen: 9, maxLen: 9 },
+  '+350': { minLen: 8, maxLen: 8 },
+  '+30': { minLen: 10, maxLen: 10 },
+  '+299': { minLen: 6, maxLen: 6 },
+  '+1-473': { minLen: 10, maxLen: 10 },
+  '+502': { minLen: 8, maxLen: 8 },
+  '+224': { minLen: 9, maxLen: 9 },
+  '+245': { minLen: 7, maxLen: 7 },
+  '+592': { minLen: 7, maxLen: 7 },
+  '+509': { minLen: 8, maxLen: 8 },
+  '+852': { minLen: 8, maxLen: 8 },
+  '+36': { minLen: 9, maxLen: 9 },
+  '+354': { minLen: 7, maxLen: 9 },
+  '+91': { minLen: 10, maxLen: 10, startsWith: /^[6-9]/ },
+  '+62': { minLen: 10, maxLen: 12 },
+  '+98': { minLen: 10, maxLen: 10 },
+  '+964': { minLen: 10, maxLen: 10 },
+  '+353': { minLen: 9, maxLen: 10 },
+  '+972': { minLen: 8, maxLen: 9 },
+  '+39': { minLen: 10, maxLen: 10 },
+  '+1-876': { minLen: 10, maxLen: 10 },
+  '+81': { minLen: 10, maxLen: 10 },
+  '+962': { minLen: 9, maxLen: 9 },
+  '+7': { minLen: 10, maxLen: 10 },
+  '+254': { minLen: 10, maxLen: 10 },
+  '+686': { minLen: 5, maxLen: 5 },
+  '+965': { minLen: 8, maxLen: 8 },
+  '+996': { minLen: 9, maxLen: 9 },
+  '+856': { minLen: 10, maxLen: 10 },
+  '+371': { minLen: 8, maxLen: 8 },
+  '+961': { minLen: 7, maxLen: 8 },
+  '+266': { minLen: 8, maxLen: 8 },
+  '+231': { minLen: 7, maxLen: 7 },
+  '+218': { minLen: 10, maxLen: 10 },
+  '+423': { minLen: 7, maxLen: 7 },
+  '+370': { minLen: 8, maxLen: 8 },
+  '+352': { minLen: 6, maxLen: 9 },
+  '+853': { minLen: 8, maxLen: 8 },
+  '+389': { minLen: 8, maxLen: 8 },
+  '+261': { minLen: 10, maxLen: 10 },
+  '+265': { minLen: 9, maxLen: 9 },
+  '+60': { minLen: 9, maxLen: 10 },
+  '+960': { minLen: 7, maxLen: 7 },
+  '+223': { minLen: 8, maxLen: 8 },
+  '+356': { minLen: 8, maxLen: 8 },
+  '+692': { minLen: 7, maxLen: 7 },
+  '+222': { minLen: 8, maxLen: 8 },
+  '+230': { minLen: 7, maxLen: 7 },
+  '+52': { minLen: 10, maxLen: 10 },
+  '+691': { minLen: 7, maxLen: 7 },
+  '+373': { minLen: 8, maxLen: 8 },
+  '+377': { minLen: 6, maxLen: 9 },
+  '+976': { minLen: 8, maxLen: 8 },
+  '+382': { minLen: 8, maxLen: 8 },
+  '+1-664': { minLen: 10, maxLen: 10 },
+  '+212': { minLen: 9, maxLen: 9 },
+  '+258': { minLen: 9, maxLen: 9 },
+  '+95': { minLen: 9, maxLen: 10 },
+  '+264': { minLen: 9, maxLen: 9 },
+  '+674': { minLen: 7, maxLen: 7 },
+  '+977': { minLen: 10, maxLen: 10 },
+  '+31': { minLen: 9, maxLen: 10 },
+  '+599': { minLen: 7, maxLen: 7 },
+  '+64': { minLen: 8, maxLen: 10 },
+  '+505': { minLen: 8, maxLen: 8 },
+  '+227': { minLen: 8, maxLen: 8 },
+  '+234': { minLen: 10, maxLen: 10 },
+  '+683': { minLen: 4, maxLen: 4 },
+  '+850': { minLen: 7, maxLen: 8 },
+  '+47': { minLen: 8, maxLen: 8 },
+  '+968': { minLen: 8, maxLen: 8 },
+  '+92': { minLen: 10, maxLen: 10 },
+  '+680': { minLen: 7, maxLen: 7 },
+  '+970': { minLen: 9, maxLen: 9 },
+  '+507': { minLen: 8, maxLen: 8 },
+  '+675': { minLen: 7, maxLen: 8 },
+  '+595': { minLen: 9, maxLen: 10 },
+  '+51': { minLen: 9, maxLen: 9 },
+  '+63': { minLen: 10, maxLen: 10 },
+  '+48': { minLen: 9, maxLen: 9 },
+  '+351': { minLen: 9, maxLen: 9 },
+  '+1-787': { minLen: 10, maxLen: 10 },
+  '+974': { minLen: 8, maxLen: 8 },
+  '+242': { minLen: 9, maxLen: 9 },
+  '+40': { minLen: 10, maxLen: 10 },
+  '+250': { minLen: 9, maxLen: 9 },
+  '+1-869': { minLen: 10, maxLen: 10 },
+  '+1-758': { minLen: 10, maxLen: 10 },
+  '+1-784': { minLen: 10, maxLen: 10 },
+  '+685': { minLen: 5, maxLen: 7 },
+  '+378': { minLen: 8, maxLen: 10 },
+  '+239': { minLen: 7, maxLen: 7 },
+  '+966': { minLen: 9, maxLen: 9 },
+  '+221': { minLen: 9, maxLen: 9 },
+  '+381': { minLen: 9, maxLen: 10 },
+  '+248': { minLen: 7, maxLen: 7 },
+  '+232': { minLen: 8, maxLen: 8 },
+  '+65': { minLen: 8, maxLen: 8 },
+  '+421': { minLen: 9, maxLen: 9 },
+  '+386': { minLen: 8, maxLen: 8 },
+  '+677': { minLen: 5, maxLen: 5 },
+  '+252': { minLen: 8, maxLen: 8 },
+  '+27': { minLen: 10, maxLen: 10 },
+  '+82': { minLen: 9, maxLen: 11 },
+  '+211': { minLen: 9, maxLen: 9 },
+  '+34': { minLen: 9, maxLen: 9 },
+  '+94': { minLen: 10, maxLen: 10 },
+  '+1-249': { minLen: 10, maxLen: 10 },
+  '+597': { minLen: 6, maxLen: 7 },
+  '+268': { minLen: 8, maxLen: 8 },
+  '+46': { minLen: 9, maxLen: 10 },
+  '+41': { minLen: 9, maxLen: 10 },
+  '+963': { minLen: 9, maxLen: 9 },
+  '+886': { minLen: 9, maxLen: 9 },
+  '+992': { minLen: 9, maxLen: 9 },
+  '+255': { minLen: 9, maxLen: 10 },
+  '+66': { minLen: 9, maxLen: 9 },
+  '+228': { minLen: 8, maxLen: 8 },
+  '+690': { minLen: 4, maxLen: 4 },
+  '+676': { minLen: 5, maxLen: 5 },
+  '+1-868': { minLen: 10, maxLen: 10 },
+  '+216': { minLen: 8, maxLen: 8 },
+  '+90': { minLen: 10, maxLen: 10 },
+  '+993': { minLen: 8, maxLen: 8 },
+  '+1-649': { minLen: 10, maxLen: 10 },
+  '+688': { minLen: 5, maxLen: 5 },
+  '+1-340': { minLen: 10, maxLen: 10 },
+  '+971': { minLen: 9, maxLen: 9 },
+  '+44': { minLen: 10, maxLen: 11 },
+  '+380': { minLen: 10, maxLen: 10 },
+  '+256': { minLen: 9, maxLen: 10 },
+  '+598': { minLen: 8, maxLen: 8 },
+  '+998': { minLen: 9, maxLen: 9 },
+  '+678': { minLen: 5, maxLen: 7 },
+  '+379': { minLen: 8, maxLen: 8 },
+  '+58': { minLen: 10, maxLen: 10 },
+  '+84': { minLen: 10, maxLen: 10 },
+  '+1-284': { minLen: 10, maxLen: 10 },
+  '+967': { minLen: 9, maxLen: 9 },
+  '+260': { minLen: 9, maxLen: 9 },
+  '+263': { minLen: 9, maxLen: 10 },
+};
+
+const knownInvalidNumbers = [
+  '0000000000', '1111111111', '2222222222', '3333333333', '4444444444',
+  '5555555555', '6666666666', '7777777777', '8888888888', '9999999999',
+  '1234567890', '9876543210', '0123456789', '0987654321',
+  '1000000000', '2000000000', '3000000000', '4000000000',
+  '5000000000', '6000000000', '7000000000', '8000000000', '9000000000',
+  '1111111110', '1111111112', '1010101010',
+  '9999999990', '9999999991', '9999999998',
+];
+
+function isArithmeticSequence(digits: string): boolean {
+  if (digits.length < 3) return false;
+  const diff = parseInt(digits[1]) - parseInt(digits[0]);
+  for (let i = 2; i < digits.length; i++) {
+    if (parseInt(digits[i]) - parseInt(digits[i-1]) !== diff) return false;
+  }
+  return true;
+}
+
+function hasExcessiveRepetition(digits: string): boolean {
+  const freq: Record<string, number> = {};
+  for (const d of digits) freq[d] = (freq[d] || 0) + 1;
+  return Object.values(freq).some(count => count >= 6);
+}
+
+function validatePhone(phone: string, withCountryCode: string = '+91'): { valid: boolean; error: string; digits: string } {
   let digits = phone.replace(/\D/g, '');
+  const config = countryPhoneConfig[withCountryCode];
   
-  if (withCountryCode === '+91' && digits.length === 11 && digits.startsWith('0')) {
-    digits = digits.slice(1);
+  if (!config) {
+    return { valid: false, error: 'Unsupported country code', digits: '' };
   }
   
-  if (withCountryCode === '+91' && digits.length === 12 && digits.startsWith('91')) {
-    digits = digits.slice(2);
+  if (withCountryCode === '+91') {
+    if (digits.length === 11 && digits.startsWith('0')) digits = digits.slice(1);
+    if (digits.length === 12 && digits.startsWith('91')) digits = digits.slice(2);
   }
   
-  if (digits.length !== 10) {
-    return { valid: false, error: 'Phone number must be exactly 10 digits', digits: '' };
+  if (digits.length < config.minLen || digits.length > config.maxLen) {
+    if (config.minLen === config.maxLen) {
+      return { valid: false, error: `Phone number must be exactly ${config.minLen} digits for this country`, digits: '' };
+    }
+    return { valid: false, error: `Phone number must be between ${config.minLen} and ${config.maxLen} digits for this country`, digits: '' };
   }
   
-  if (!/^[6-9]/.test(digits)) {
-    return { valid: false, error: 'Phone number must start with 6, 7, 8, or 9', digits: '' };
+  if (config.startsWith && !config.startsWith.test(digits)) {
+    return { valid: false, error: `Phone number must start with ${config.startsWith.toString().replace(/[\^\/\[\]]/g, '').replace('6-9', '6, 7, 8, or 9')}`, digits: '' };
   }
   
-  const invalidNumbers = [
-    '0000000000', '1111111111', '2222222222', '3333333333', '4444444444',
-    '5555555555', '6666666666', '7777777777', '8888888888', '9999999999',
-    '1234567890', '9876543210', '0123456789', '0987654321'
-  ];
-  
-  if (invalidNumbers.includes(digits)) {
+  if (knownInvalidNumbers.includes(digits)) {
     return { valid: false, error: 'Please enter a valid phone number', digits: '' };
   }
   
-  const repeatedPairs = /(.).*\1.*\1/;
-  if (repeatedPairs.test(digits)) {
-    return { valid: false, error: 'Phone number cannot have too many repeated digits', digits: '' };
+  if (hasExcessiveRepetition(digits)) {
+    return { valid: false, error: 'Phone number has too many repeated digits', digits: '' };
+  }
+  
+  if (isArithmeticSequence(digits)) {
+    return { valid: false, error: 'Please enter a valid phone number', digits: '' };
+  }
+  
+  const subscriberPart = digits.slice(-6);
+  if (/^0+$/.test(subscriberPart)) {
+    return { valid: false, error: 'Please enter a valid phone number', digits: '' };
   }
   
   return { valid: true, error: '', digits };
@@ -284,7 +522,7 @@ export default function KGIChatWidget({ embedded = false }: { embedded?: boolean
   const [userData, setUserData] = useState({ name: '', phone: '', course: '' });
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
-  const welcomeMessage = "Namaste! 🙏 I'm Kaia - your admission assistant at Koshys Group of Institutions.\n\nCould you please share your mobile number?";
+  const welcomeMessage = "Namaste! 🙏 I'm Kaia - your admission assistant at Koshys Group of Institutions.\n\nMay I know your name?";
 
   useEffect(() => {
     if (isOpen && messages.length === 0) {
@@ -352,16 +590,16 @@ export default function KGIChatWidget({ embedded = false }: { embedded?: boolean
     
     const updatedData = { ...userData, name: name.trim() };
     setUserData(updatedData);
-    setCollectionStep('course');
+    setCollectionStep('phone');
     
     setMessages(prev => [...prev, 
       { id: Date.now().toString(), role: 'user', content: name },
-      { id: (Date.now()+1).toString(), role: 'assistant', content: `Nice to meet you, ${name}! 📚\n\nWhich course are you interested in?` }
+      { id: (Date.now()+1).toString(), role: 'assistant', content: `Nice to meet you, ${name}! 📞\n\nCould you please share your mobile number with country code?` }
     ]);
   };
 
   const handlePhoneSubmit = async (phoneInput: string) => {
-    const validation = validateIndianPhone(phoneInput, countryCode);
+    const validation = validatePhone(phoneInput, countryCode);
     
     if (!validation.valid) {
       setPhoneError(validation.error);
@@ -385,17 +623,17 @@ export default function KGIChatWidget({ embedded = false }: { embedded?: boolean
           { id: (Date.now()+1).toString(), role: 'assistant', content: `Welcome back, ${data.name}! 👋\n\nYou previously registered for ${data.course || 'our courses'}.\n\nIs there anything else you'd like to know about KGI?` }
         ]);
       } else {
-        setCollectionStep('name');
+        setCollectionStep('course');
         setMessages(prev => [...prev, 
           { id: Date.now().toString(), role: 'user', content: fullPhone },
-          { id: (Date.now()+1).toString(), role: 'assistant', content: `Thank you! 📝\n\nCould you please tell me your name?` }
+          { id: (Date.now()+1).toString(), role: 'assistant', content: `Thank you! 📚\n\nWhich course are you interested in?` }
         ]);
       }
     } catch (e) {
-      setCollectionStep('name');
+      setCollectionStep('course');
       setMessages(prev => [...prev, 
         { id: Date.now().toString(), role: 'user', content: fullPhone },
-        { id: (Date.now()+1).toString(), role: 'assistant', content: `Thank you! 📝\n\nCould you please tell me your name?` }
+        { id: (Date.now()+1).toString(), role: 'assistant', content: `Thank you! 📚\n\nWhich course are you interested in?` }
       ]);
     }
   };
@@ -415,13 +653,13 @@ export default function KGIChatWidget({ embedded = false }: { embedded?: boolean
   const sendMessage = async (text: string) => {
     if (!text.trim()) return;
     
-    if (collectionStep === 'phone') {
-      handlePhoneSubmit(text);
+    if (collectionStep === 'name') {
+      handleNameSubmit(text);
       setInput('');
       return;
     }
-    if (collectionStep === 'name') {
-      handleNameSubmit(text);
+    if (collectionStep === 'phone') {
+      handlePhoneSubmit(text);
       setInput('');
       return;
     }
@@ -472,8 +710,8 @@ export default function KGIChatWidget({ embedded = false }: { embedded?: boolean
   };
 
   const getProgressText = () => {
-    if (collectionStep === 'phone') return 'Step 1 of 3';
-    if (collectionStep === 'name') return 'Step 2 of 3';
+    if (collectionStep === 'name') return 'Step 1 of 3';
+    if (collectionStep === 'phone') return 'Step 2 of 3';
     if (collectionStep === 'course') return 'Step 3 of 3';
     return '';
   };
